@@ -75,6 +75,11 @@ paths:
 components:
   schemas:
     Result:
-      type: array
-      items:
-        type: string
+      type: object
+      properties:
+        topics:
+          type: object
+        doc_topic:
+          type: object
+        metrics:
+          type: object

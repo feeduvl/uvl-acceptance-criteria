@@ -25,8 +25,16 @@ public class App
                 JsonObject jsonRequest = new Gson().fromJson(request.body(), JsonObject.class);
                 response.header("Content-Type", "application/json");
                 JsonArray documents = jsonRequest.get("dataset").getAsJsonObject().get("documents").getAsJsonArray();
-                JsonArray jsonResponse = new JsonArray();
-                jsonResponse.add("The request contains " + documents.size() + " documents.");
+                JsonObject jsonResponse = new JsonObject();
+                JsonObject topics = new JsonObject();
+                JsonObject doc_topic = new JsonObject();
+                JsonObject metrics = new JsonObject();
+
+                metrics.addProperty("count", documents.size());
+
+                jsonResponse.add("topics", topics);
+                jsonResponse.add("doc_topics", doc_topic);
+                jsonResponse.add("metrics", metrics);
                 return jsonResponse;     
             } catch (Exception e) {
                 response.status(500);
