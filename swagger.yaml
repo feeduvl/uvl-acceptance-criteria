@@ -16,6 +16,9 @@ paths:
             schema:
               type: object
               properties:
+                method:
+                  type: string
+                  example: "acceptance-criteria"
                 params:
                   type: object
                   properties:
