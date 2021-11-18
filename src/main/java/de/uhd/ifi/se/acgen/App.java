@@ -35,9 +35,11 @@ public class App
                 jsonResponse.add("topics", topics);
                 jsonResponse.add("doc_topics", doc_topic);
                 jsonResponse.add("metrics", metrics);
+                System.out.println(jsonResponse.toString());
                 return jsonResponse;     
             } catch (Exception e) {
                 response.status(500);
+                System.out.println("<h1>500 Internal Server Error</h1>");
                 return "<h1>500 Internal Server Error</h1>";
             }
         });
