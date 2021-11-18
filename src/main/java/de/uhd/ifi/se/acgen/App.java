@@ -16,7 +16,7 @@ public class App
             System.out.println("Status triggered.");
             response.header("Content-Type", "application/json");
             JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("status", "in development");
+            jsonResponse.addProperty("status", "operational");
             return jsonResponse;
         });
         post("/hitec/generate/acceptance-criteria/run", (request, response) -> {
@@ -24,7 +24,7 @@ public class App
             try {
                 JsonObject jsonRequest = new Gson().fromJson(request.body(), JsonObject.class);
                 response.header("Content-Type", "application/json");
-                JsonObject documents = jsonRequest.get("dataset").getAsJsonObject().get("documents").getAsJsonObject();
+                JsonArray documents = jsonRequest.get("dataset").getAsJsonObject().get("documents").getAsJsonArray();
                 JsonArray jsonResponse = new JsonArray();
                 jsonResponse.add("The request contains " + documents.size() + " documents.");
                 return jsonResponse;     
