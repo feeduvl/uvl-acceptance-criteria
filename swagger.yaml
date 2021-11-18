@@ -1,0 +1,77 @@
+openapi: 3.0.1
+info:
+  title: Create acceptance criteria from user stories
+  description: This API returns a json, containing textual acceptance criteria. It expects a JSON payload that
+    contains a dataset and method parameters. A dataset JSON object consists of user stories, a user story has a number and the user story text.
+  version: '1.0'
+servers:
+  - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+paths:
+  /hitec/generate/acceptance-criteria/run:
+    post:
+      description: returns acceptance criteria
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                params:
+                  type: object
+                  properties:
+                    alpha:
+                      type: number
+                      example: 0.1
+                dataset:
+                  type: object
+                  properties:
+                    documents:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          number:
+                            type: integer
+                          text:
+                            type: string
+            examples: {}
+      responses:
+        '200':
+          description: returns acceptance criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '500':
+          description: returns code 500 when the request is invalid or there was an error while processing
+      servers:
+        - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+    servers:
+      - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+  /hitec/generate/acceptance-criteria/status:
+    get:
+      description: returns 'operational' when the microservice is running
+      responses:
+        '200':
+          description: returns 'operational' when the microservice is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+              examples:
+                '0':
+                  value: |
+                    {"status":"operational"}
+      servers:
+        - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+    servers:
+      - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+components:
+  schemas:
+    Result:
+      type: array
+      items:
+        type: string

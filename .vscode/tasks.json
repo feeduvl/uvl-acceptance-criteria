@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Docker container",
+            "type": "docker-build",
+            "dockerBuild": {
+                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "context": "${workspaceFolder}",
+                "tag": "acgen"
+            }
+        },    
+        {
+            "label": "Run Docker container",
+            "type": "docker-run",
+            "dockerRun": {
+                "image": "acgen",
+                "ports": [{
+                    "containerPort": 9696,
+                    "hostPort": 9696
+                }],
+                "volumes": [{
+                    "localPath": "${workspaceFolder}",
+                    "containerPath": "/acgen"
+                }],
+                "remove": true
+            }
+        }
+    ]
+  }
