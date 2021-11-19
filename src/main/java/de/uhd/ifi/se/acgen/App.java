@@ -16,7 +16,7 @@ public class App
         for (JsonElement document : documents) {
             int number = document.getAsJsonObject().get("number").getAsInt();
             String text = document.getAsJsonObject().get("text").getAsString();
-            String[] words = text.split(" ");
+            String[] words = text.split("\n");
             for (String word : words) {
                 response.addAC(word, number);
             }
