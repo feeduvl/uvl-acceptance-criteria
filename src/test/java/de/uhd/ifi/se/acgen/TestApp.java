@@ -12,7 +12,7 @@ public class TestApp {
 			(new Socket("localhost", 9696)).close();
 		}
 		catch(Exception e) {
-			new App(9696);
+			App.main(new String[0]);
 		}
 	}
 
