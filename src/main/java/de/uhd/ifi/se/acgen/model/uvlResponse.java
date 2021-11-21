@@ -3,34 +3,16 @@ package de.uhd.ifi.se.acgen.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class ACResponse {
+public class uvlResponse {
     JsonObject ac;
     JsonObject us_ac;
     JsonObject metrics;
 
-    public ACResponse() {
+    public uvlResponse() {
         ac = new JsonObject();
         us_ac = new JsonObject();
         metrics = new JsonObject();
     };
-
-    public ACResponse(JsonObject _ac, JsonObject _us_ac, JsonObject _metrics) {
-        ac = _ac;
-        us_ac = _us_ac;
-        metrics = _metrics;
-    };
-
-    public JsonObject getAC() {
-        return this.ac;
-    }
-
-    public JsonObject getUSAC() {
-        return this.us_ac;
-    }
-
-    public JsonObject getMetrics() {
-        return this.metrics;
-    }
 
     public JsonObject toJson() {
         JsonObject ret = new JsonObject();
@@ -42,18 +24,6 @@ public class ACResponse {
 
     public String toString() {
         return this.toJson().toString();
-    }
-
-    public void setAC(JsonObject _ac) {
-        this.ac = _ac;
-    }
-
-    public void setUSAC(JsonObject _us_ac) {
-        this.us_ac = _us_ac;
-    }
-
-    public void setMetrics(JsonObject _metrics) {
-        this.metrics = _metrics;
     }
 
     public int getACCountOfUS(int usNumber) {

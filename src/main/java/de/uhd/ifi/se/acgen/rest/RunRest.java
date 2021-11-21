@@ -5,13 +5,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import de.uhd.ifi.se.acgen.model.ACResponse;
+import de.uhd.ifi.se.acgen.model.uvlResponse;
 import spark.Request;
 import spark.Response;
 
 public class RunRest {
     
-    public static ACResponse splitDocumentsInWords(JsonArray documents, ACResponse response) {
+    public static uvlResponse splitDocumentsInWords(JsonArray documents, uvlResponse response) {
         for (JsonElement document : documents) {
             int number = document.getAsJsonObject().get("number").getAsInt();
             String text = document.getAsJsonObject().get("text").getAsString();
@@ -28,7 +28,7 @@ public class RunRest {
             JsonObject jsonRequest = new Gson().fromJson(req.body(), JsonObject.class);
             res.header("Content-Type", "application/json");
             JsonArray documents = jsonRequest.get("dataset").getAsJsonObject().get("documents").getAsJsonArray();
-            ACResponse response = new ACResponse();
+            uvlResponse response = new uvlResponse();
             response.addMetric("count", documents.size());
             splitDocumentsInWords(documents, response);
             return response;     
