@@ -3,18 +3,18 @@ package de.uhd.ifi.se.acgen.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class Response {
+public class ACResponse {
     JsonObject ac;
     JsonObject us_ac;
     JsonObject metrics;
 
-    public Response() {
+    public ACResponse() {
         ac = new JsonObject();
         us_ac = new JsonObject();
         metrics = new JsonObject();
     };
 
-    public Response(JsonObject _ac, JsonObject _us_ac, JsonObject _metrics) {
+    public ACResponse(JsonObject _ac, JsonObject _us_ac, JsonObject _metrics) {
         ac = _ac;
         us_ac = _us_ac;
         metrics = _metrics;
