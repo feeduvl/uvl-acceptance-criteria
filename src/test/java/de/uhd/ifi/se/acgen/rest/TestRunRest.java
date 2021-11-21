@@ -25,10 +25,10 @@ public class TestRunRest extends TestApp {
         JsonArray documents = new JsonArray();
         JsonObject document1 = new JsonObject();
         document1.addProperty("number", 1);
-        document1.addProperty("text", "This is a string.");        
+        document1.addProperty("text", "This is a sentence.");        
         JsonObject document2 = new JsonObject();
         document2.addProperty("number", 2);
-        document2.addProperty("text", "This is another string.");
+        document2.addProperty("text", "This is also a sentence.\nThis is another sentence on a new line.");
         documents.add(document1);
         documents.add(document2);
         dataset.add("documents", documents);
