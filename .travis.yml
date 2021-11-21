@@ -1,0 +1,6 @@
+services:
+  - docker
+
+before_install:
+  - docker build -t uvl-acceptance-criteria .
+  - docker run -dp 9696:9696 uvl-acceptance-criteria mvn test
