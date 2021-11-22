@@ -3,23 +3,24 @@ package de.uhd.ifi.se.acgen.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class uvlResponse {
+public class UvlResponse {
+    
     JsonObject ac;
     JsonObject us_ac;
     JsonObject metrics;
 
-    public uvlResponse() {
+    public UvlResponse() {
         ac = new JsonObject();
         us_ac = new JsonObject();
         metrics = new JsonObject();
     };
 
     public JsonObject toJson() {
-        JsonObject ret = new JsonObject();
-        ret.add("topics", this.ac);
-        ret.add("doc_topic", this.us_ac);
-        ret.add("metrics", this.metrics);
-        return ret;
+        JsonObject jsonResponse = new JsonObject();
+        jsonResponse.add("topics", this.ac);
+        jsonResponse.add("doc_topic", this.us_ac);
+        jsonResponse.add("metrics", this.metrics);
+        return jsonResponse;
     }
 
     public String toString() {

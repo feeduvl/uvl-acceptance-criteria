@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.acgen.rest;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -7,7 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.uhd.ifi.se.acgen.TestApp;
 import de.uhd.ifi.se.acgen.rest.utils.TestHttpResponse;
@@ -41,7 +43,7 @@ public class TestRunRest extends TestApp {
         request.setHeader("Content-type", "application/json");
         HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
 
-        TestHttpResponse.testStatusOKAndContentJSON(httpResponse);
+        assertTrue(TestHttpResponse.testStatusOKAndContentJSON(httpResponse));
     }
 
     @Test
@@ -56,6 +58,6 @@ public class TestRunRest extends TestApp {
         request.setHeader("Content-type", "application/json");
         HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
 
-        TestHttpResponse.testStatusServerError(httpResponse);
+        assertTrue(TestHttpResponse.testStatusServerError(httpResponse));
     }
 }
