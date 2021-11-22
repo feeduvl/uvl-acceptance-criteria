@@ -27,10 +27,10 @@ public class TestRunRest extends TestApp {
         JsonArray documents = new JsonArray();
         JsonObject document1 = new JsonObject();
         document1.addProperty("number", 1);
-        document1.addProperty("text", "This is a sentence.");        
+        document1.addProperty("text", "As a developer, I want to write a user story without a reason.");        
         JsonObject document2 = new JsonObject();
         document2.addProperty("number", 2);
-        document2.addProperty("text", "This is also a sentence.\nThis is another sentence on a new line.");
+        document2.addProperty("text", "As a developer, I want to write a user story with a reason so that I can test my API.");
         documents.add(document1);
         documents.add(document2);
         dataset.add("documents", documents);
