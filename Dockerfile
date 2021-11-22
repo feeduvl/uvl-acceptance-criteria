@@ -23,5 +23,6 @@ COPY settings-docker.xml /usr/share/maven/ref/
 ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh"]
 WORKDIR /uvl-acceptance-criteria
 COPY . .
+RUN mvn clean
 RUN mvn package
 CMD ["mvn", "exec:java"]
