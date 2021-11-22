@@ -35,12 +35,15 @@ public class RunRest {
     
     public Object createResponse(Request req, Response res) throws Exception {
         try {
+            long start = System.currentTimeMillis();
             JsonObject jsonRequest = new Gson().fromJson(req.body(), JsonObject.class);
             res.header("Content-Type", "application/json");
             JsonArray documents = jsonRequest.get("dataset").getAsJsonObject().get("documents").getAsJsonArray();
             UvlResponse response = new UvlResponse();
             response.addMetric("count", documents.size());
             splitUserStoriesInParts(documents, response);
+            long finish = System.currentTimeMillis();
+            response.addMetric("runtime", finish - start);
             return response;     
         } catch (Exception e) {
             res.status(500);

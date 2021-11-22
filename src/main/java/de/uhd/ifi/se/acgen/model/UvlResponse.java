@@ -52,7 +52,7 @@ public class UvlResponse {
         this.us_ac.get(Integer.toString(usNumber)).getAsJsonArray().add(acIndexArray);
     }
 
-    public void addMetric(String string, int value) {
+    public void addMetric(String string, long value) {
         metrics.addProperty(string, value);
     }
 }
