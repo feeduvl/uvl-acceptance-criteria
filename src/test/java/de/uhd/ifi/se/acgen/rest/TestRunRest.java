@@ -31,8 +31,12 @@ public class TestRunRest extends TestApp {
         JsonObject document2 = new JsonObject();
         document2.addProperty("number", 2);
         document2.addProperty("text", "As a developer, I want to write a user story with a reason so that I can test my API.");
+        JsonObject document3 = new JsonObject();
+        document3.addProperty("number", 3);
+        document3.addProperty("text", "This is not a user story.");
         documents.add(document1);
         documents.add(document2);
+        documents.add(document3);
         dataset.add("documents", documents);
         jsonRequest.add("dataset", dataset);
 
