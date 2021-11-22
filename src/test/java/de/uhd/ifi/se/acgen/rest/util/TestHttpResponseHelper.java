@@ -1,11 +1,11 @@
-package de.uhd.ifi.se.acgen.rest.utils;
+package de.uhd.ifi.se.acgen.rest.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ContentType;
 
-public class TestHttpResponse {
+public class TestHttpResponseHelper {
 
     public static boolean testStatusOKAndContentJSON(HttpResponse httpResponse) {
         assertEquals(200, httpResponse.getStatusLine().getStatusCode());

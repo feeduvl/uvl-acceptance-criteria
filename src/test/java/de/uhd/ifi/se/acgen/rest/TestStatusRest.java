@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Test;
 
 import de.uhd.ifi.se.acgen.TestApp;
-import de.uhd.ifi.se.acgen.rest.utils.TestHttpResponse;
+import de.uhd.ifi.se.acgen.rest.util.TestHttpResponseHelper;
 
 public class TestStatusRest extends TestApp {
 
@@ -23,7 +23,7 @@ public class TestStatusRest extends TestApp {
         HttpUriRequest request = new HttpGet(baseUrl + "status");
         HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
 
-        assertTrue(TestHttpResponse.testStatusOKAndContentJSON(httpResponse));
+        assertTrue(TestHttpResponseHelper.testStatusOKAndContentJSON(httpResponse));
         JsonObject expectedResponseBody = new JsonObject();
         expectedResponseBody.addProperty("status", "operational");
         assertEquals(expectedResponseBody, new Gson().fromJson(EntityUtils.toString(httpResponse.getEntity()), JsonObject.class));

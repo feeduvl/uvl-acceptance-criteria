@@ -30,8 +30,8 @@ public class UserStory {
     
     private boolean isEg(String userStoryString, int indexOfPeriod) {
         try {
-            return userStoryString.toLowerCase().substring(indexOfPeriod - 3, indexOfPeriod + 1).equals("e.g.") || 
-                userStoryString.toLowerCase().substring(indexOfPeriod - 1, indexOfPeriod + 3).equals("e.g.");
+            return userStoryString.substring(indexOfPeriod - 3, indexOfPeriod + 1).equalsIgnoreCase("e.g.") || 
+                userStoryString.substring(indexOfPeriod - 1, indexOfPeriod + 3).equalsIgnoreCase("e.g.");
         } catch (StringIndexOutOfBoundsException e) {
             return false;
         }

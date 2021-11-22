@@ -12,7 +12,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.Test;
 
 import de.uhd.ifi.se.acgen.TestApp;
-import de.uhd.ifi.se.acgen.rest.utils.TestHttpResponse;
+import de.uhd.ifi.se.acgen.rest.util.TestHttpResponseHelper;
 
 public class TestRunRest extends TestApp {
 
@@ -43,7 +43,7 @@ public class TestRunRest extends TestApp {
         request.setHeader("Content-type", "application/json");
         HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
 
-        assertTrue(TestHttpResponse.testStatusOKAndContentJSON(httpResponse));
+        assertTrue(TestHttpResponseHelper.testStatusOKAndContentJSON(httpResponse));
     }
 
     @Test
@@ -58,6 +58,6 @@ public class TestRunRest extends TestApp {
         request.setHeader("Content-type", "application/json");
         HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
 
-        assertTrue(TestHttpResponse.testStatusServerError(httpResponse));
+        assertTrue(TestHttpResponseHelper.testStatusServerError(httpResponse));
     }
 }
