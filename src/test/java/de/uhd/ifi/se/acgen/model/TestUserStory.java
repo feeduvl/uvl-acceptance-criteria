@@ -125,4 +125,36 @@ public class TestUserStory {
         }
     }
 
+    @Test
+    public void testUserStoriesWithStarredLine() {
+        String userStoryString = "As a developer, I want this user story to\n" +
+                "* contain\n" +
+                "* a\n" +
+                "* starred\n" +
+                "* list.\n" +
+                "and see what happens.\n" + 
+                "This is another sentence, also not being part of the user story.";
+        try {
+            UserStory userStory = new UserStory(userStoryString);
+            assertTrue(userStory.getGoal().contains("and see what happens"));
+        } catch (NoUserStoryException e) {
+            fail();
+        }
+
+        userStoryString = "As a developer, I want this user story to\n" +
+                "* not\n" +
+                "* contain\n" +
+                "* a\n" +
+                "* sentence\n" +
+                "* period.\n" +
+                "and see what happens";
+        try {
+            UserStory userStory = new UserStory(userStoryString);
+            assertTrue(userStory.getGoal().contains("and see what happens"));
+            assertTrue(userStory.getUserStoryString().equals(userStoryString));
+        } catch (NoUserStoryException e) {
+            fail();
+        }
+    }
+
 }

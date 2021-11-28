@@ -37,11 +37,20 @@ public class UserStory {
         }
     }
 
+    private boolean isInStarredLine(String userStoryString, int index) {
+        try {
+            String userStoryUntilIndex = userStoryString.substring(0, index);
+            return userStoryUntilIndex.substring(userStoryUntilIndex.lastIndexOf('\n') + 1).matches("\\s*\\*.*");
+        } catch (StringIndexOutOfBoundsException e) {
+            return false;
+        }
+    }
+
     private int findEndOfUserStory(String userStoryString, int indexLastKeyword) {
         int indexOfPeriod = indexLastKeyword;
         do {
             indexOfPeriod = userStoryString.indexOf(".", indexOfPeriod + 1);
-            if (indexOfPeriod != -1 && !isEg(userStoryString, indexOfPeriod)) {
+            if (indexOfPeriod != -1 && !isEg(userStoryString, indexOfPeriod) && !isInStarredLine(userStoryString, indexOfPeriod)) {
                 return indexOfPeriod + 1;
             }
         } while (indexOfPeriod != -1);
