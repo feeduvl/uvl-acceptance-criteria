@@ -38,12 +38,8 @@ public class UserStory {
     }
 
     private boolean isInStarredLine(String userStoryString, int index) {
-        try {
-            String userStoryUntilIndex = userStoryString.substring(0, index);
-            return userStoryUntilIndex.substring(userStoryUntilIndex.lastIndexOf('\n') + 1).matches("\\s*\\*.*");
-        } catch (StringIndexOutOfBoundsException e) {
-            return false;
-        }
+        String userStoryUntilIndex = userStoryString.substring(0, index);
+        return userStoryUntilIndex.substring(userStoryUntilIndex.lastIndexOf('\n') + 1).matches("\\s*\\*.*");
     }
 
     private int findEndOfUserStory(String userStoryString, int indexLastKeyword) {
