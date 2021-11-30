@@ -1,12 +1,19 @@
 package de.uhd.ifi.se.acgen.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import de.uhd.ifi.se.acgen.exception.MultipleSentencesException;
 import de.uhd.ifi.se.acgen.exception.NoUserStoryException;
+import de.uhd.ifi.se.acgen.generator.Generator;
 
 public class UserStory {
 
     String role;
     String goal;
     String reason;
+    Map<String, List<String>> acceptanceCriteria;
 
     public UserStory(String userStoryString) throws NoUserStoryException {
         int indexAsA = userStoryString.toUpperCase().indexOf("AS A", 0);
@@ -26,6 +33,8 @@ public class UserStory {
             goal = userStoryString.substring(indexIWant, indexSoThat);
             reason = userStoryString.substring(indexSoThat, findEndOfUserStory(userStoryString, indexSoThat));
         }
+
+        acceptanceCriteria = new HashMap<String, List<String>>();
     };
     
     private boolean isEg(String userStoryString, int indexOfPeriod) {
@@ -72,5 +81,14 @@ public class UserStory {
 
     public boolean containsReason() {
         return !reason.equals("");
+    }
+
+    public List<String> getAcceptanceCriteria(Generator generator) throws MultipleSentencesException {
+        String generatorName = generator.getClass().getName();
+        assert(!generatorName.equals(""));
+        if (!acceptanceCriteria.containsKey(generatorName)) {
+            acceptanceCriteria.put(generatorName, generator.generate(this));
+        }
+        return acceptanceCriteria.get(generatorName);
     }
 }
