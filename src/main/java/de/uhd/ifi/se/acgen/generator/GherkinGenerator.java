@@ -6,9 +6,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
-import de.uhd.ifi.se.acgen.exception.MultipleSentencesException;
 import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
 import de.uhd.ifi.se.acgen.model.UserStory;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
@@ -18,11 +18,10 @@ import edu.stanford.nlp.ling.IndexedWord;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.util.PropertiesUtils;
 
 public class GherkinGenerator implements Generator {
     
-    public List<String> generate(UserStory userStory) throws MultipleSentencesException, SubjectNotFoundException {
+    public List<String> generate(UserStory userStory) throws SubjectNotFoundException {
         String userStoryString = userStory.getUserStoryString();
         List<String> acceptanceCriteria = new ArrayList<String>();
         userStoryString = preprocessing(userStoryString);
@@ -30,13 +29,13 @@ public class GherkinGenerator implements Generator {
         return acceptanceCriteria;
     }
 
-    private String preprocessing(String userStoryString) throws MultipleSentencesException, SubjectNotFoundException {
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(PropertiesUtils.asProperties("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,coref"));
+    private String preprocessing(String userStoryString) throws SubjectNotFoundException {
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,coref");
+        props.setProperty("tokenize,ssplit,pos,lemma,ner,depparse,coref", "true");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         CoreDocument document = new CoreDocument(userStoryString);
         pipeline.annotate(document);
-        if (document.sentences().size() > 1) {
-            throw new MultipleSentencesException("Multiple sentences have been detected.");
-        }
         CoreSentence userStorySentence = document.sentences().get(0);
 
         Map<Integer, String> replaceMap = new HashMap<Integer, String>();

@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import de.uhd.ifi.se.acgen.exception.MultipleSentencesException;
 import de.uhd.ifi.se.acgen.exception.NoUserStoryException;
 import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
 import de.uhd.ifi.se.acgen.generator.GherkinGenerator;
@@ -19,6 +18,8 @@ import spark.Response;
 public class RunRest {
     
     public static UvlResponse addAcceptanceCriteriaToResponse(JsonArray documents, UvlResponse response) {
+        int errors = 0;
+        int warnings = 0;
         for (JsonElement document : documents) {
             int userStoryNumber = document.getAsJsonObject().get("number").getAsInt();
             String userStoryText = document.getAsJsonObject().get("text").getAsString();
@@ -29,12 +30,16 @@ public class RunRest {
                     response.addAC(acceptanceCriterion, userStoryNumber);
                 }
                 if (!userStory.containsReason()) {
+                    warnings += 1;
                     response.addAC("WARNING: A reason could not be found. Please make sure the reason of the user story is declared after the role and the goal using the syntax \"so that [reason]\".", userStoryNumber);
                 }
-            } catch (NoUserStoryException | MultipleSentencesException | SubjectNotFoundException e) {
+            } catch (NoUserStoryException | SubjectNotFoundException e) {
+                errors += 1;
                 response.addAC("ERROR: " + e.getMessage(), userStoryNumber);
             }
         }
+        response.addMetric("errorCount", errors);
+        response.addMetric("warningCount", warnings);
         return response;
     }
     

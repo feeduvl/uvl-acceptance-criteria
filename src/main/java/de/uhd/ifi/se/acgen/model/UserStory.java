@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.acgen.exception.MultipleSentencesException;
 import de.uhd.ifi.se.acgen.exception.NoUserStoryException;
 import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
 import de.uhd.ifi.se.acgen.generator.Generator;
@@ -84,7 +83,7 @@ public class UserStory {
         return !reason.equals("");
     }
 
-    public List<String> getAcceptanceCriteria(Generator generator) throws MultipleSentencesException, SubjectNotFoundException {
+    public List<String> getAcceptanceCriteria(Generator generator) throws SubjectNotFoundException {
         String generatorName = generator.getClass().getName();
         assert(!generatorName.equals(""));
         if (!acceptanceCriteria.containsKey(generatorName)) {
