@@ -16,6 +16,11 @@ public class UserStory {
     Map<String, List<String>> acceptanceCriteria;
 
     public UserStory(String userStoryString) throws NoUserStoryException {
+        identifyParts(userStoryString.replaceAll("\\.{3,}", "…"));
+        acceptanceCriteria = new HashMap<String, List<String>>();
+    };
+
+    private void identifyParts(String userStoryString) throws NoUserStoryException {
         int indexAsA = userStoryString.toUpperCase().indexOf("AS A", 0);
         if (indexAsA == -1) {
              throw new NoUserStoryException("A role could not be found. Please make sure the role of the user story is declared using the syntax \"As a(n) [role]\".");
@@ -33,9 +38,7 @@ public class UserStory {
             goal = userStoryString.substring(indexIWant, indexSoThat);
             reason = userStoryString.substring(indexSoThat, findEndOfUserStory(userStoryString, indexSoThat));
         }
-
-        acceptanceCriteria = new HashMap<String, List<String>>();
-    };
+    }
     
     private boolean isEg(String userStoryString, int indexOfPeriod) {
         try {

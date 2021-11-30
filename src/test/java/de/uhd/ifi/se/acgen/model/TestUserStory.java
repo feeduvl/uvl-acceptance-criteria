@@ -105,12 +105,11 @@ public class TestUserStory {
     }
 
     @Test
-    public void testUserStoriesWithEg() {
-        String userStoryString = "As a developer, I want to e.g. include an example in my user story.";
+    public void testUserStoriesWithEgAndDots() {
+        String userStoryString = "As a developer, I want to include an example in my user story (e.g. hello, world, ...).";
         try {
             UserStory userStory = new UserStory(userStoryString);
-            assertTrue(userStory.getGoal().contains("I want to e.g. include an example in my user story."));
-            assertTrue(userStory.getUserStoryString().equals(userStoryString));
+            assertTrue(userStory.getGoal().contains("I want to include an example in my user story (e.g. hello, world, …)."));
         } catch (NoUserStoryException e) {
             fail();
         }
