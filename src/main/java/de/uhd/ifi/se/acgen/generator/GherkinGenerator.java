@@ -32,7 +32,7 @@ public class GherkinGenerator implements Generator {
     private String preprocessing(String userStoryString) throws SubjectNotFoundException {
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,coref");
-        props.setProperty("tokenize,ssplit,pos,lemma,ner,depparse,coref", "true");
+        props.setProperty("ssplit.isOneSentence", "true");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         CoreDocument document = new CoreDocument(userStoryString);
         pipeline.annotate(document);
