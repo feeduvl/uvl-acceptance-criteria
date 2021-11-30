@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 
 import de.uhd.ifi.se.acgen.exception.MultipleSentencesException;
 import de.uhd.ifi.se.acgen.exception.NoUserStoryException;
+import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
 import de.uhd.ifi.se.acgen.generator.GherkinGenerator;
 import de.uhd.ifi.se.acgen.model.UserStory;
 import de.uhd.ifi.se.acgen.model.UvlResponse;
@@ -30,7 +31,7 @@ public class RunRest {
                 if (!userStory.containsReason()) {
                     response.addAC("WARNING: A reason could not be found. Please make sure the reason of the user story is declared after the role and the goal using the syntax \"so that [reason]\".", userStoryNumber);
                 }
-            } catch (NoUserStoryException | MultipleSentencesException e) {
+            } catch (NoUserStoryException | MultipleSentencesException | SubjectNotFoundException e) {
                 response.addAC("ERROR: " + e.getMessage(), userStoryNumber);
             }
         }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.uhd.ifi.se.acgen.exception.MultipleSentencesException;
+import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
 import de.uhd.ifi.se.acgen.model.UserStory;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
@@ -21,7 +22,7 @@ import edu.stanford.nlp.util.PropertiesUtils;
 
 public class GherkinGenerator implements Generator {
     
-    public List<String> generate(UserStory userStory) throws MultipleSentencesException {
+    public List<String> generate(UserStory userStory) throws MultipleSentencesException, SubjectNotFoundException {
         String userStoryString = userStory.getUserStoryString();
         List<String> acceptanceCriteria = new ArrayList<String>();
         userStoryString = preprocessing(userStoryString);
@@ -29,7 +30,7 @@ public class GherkinGenerator implements Generator {
         return acceptanceCriteria;
     }
 
-    private String preprocessing(String userStoryString) throws MultipleSentencesException {
+    private String preprocessing(String userStoryString) throws MultipleSentencesException, SubjectNotFoundException {
         StanfordCoreNLP pipeline = new StanfordCoreNLP(PropertiesUtils.asProperties("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,coref"));
         CoreDocument document = new CoreDocument(userStoryString);
         pipeline.annotate(document);
@@ -38,12 +39,20 @@ public class GherkinGenerator implements Generator {
         }
         CoreSentence userStorySentence = document.sentences().get(0);
 
+        Map<Integer, String> replaceMap = new HashMap<Integer, String>();
+
+        replaceMap = switchToThirdPerson(document, userStorySentence, replaceMap);
+        replaceMap = resolvePronouns(document, userStorySentence, replaceMap);
+
+        return replaceWordsInSentence(userStorySentence, userStoryString, replaceMap);
+    }
+
+    private Map<Integer, String> switchToThirdPerson(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replaceMap) throws SubjectNotFoundException {
         IndexedWord subject = getSubject(userStorySentence);
         if (subject == null) {
-            return userStoryString;
+            throw new SubjectNotFoundException("The subject of the user story could not be identified.");
         }
         List<IndexedWord> coreferencesOfSubject =  getCoreferencesOfWord(document, subject);
-        Map<Integer, String> replaceMap = new HashMap<Integer, String>();
         for (IndexedWord coreferenceOfSubject : coreferencesOfSubject) {
             if (coreferenceOfSubject.word().equalsIgnoreCase("I")) {
                 replaceMap.put(coreferenceOfSubject.index(), "the user");
@@ -71,7 +80,10 @@ public class GherkinGenerator implements Generator {
                 replaceMap.put(coreferenceOfSubject.index(), "the user");
             }
         }
+        return replaceMap;
+    }
 
+    private Map<Integer, String> resolvePronouns(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replaceMap) {
         for (CorefChain chain : document.annotation().get(CorefCoreAnnotations.CorefChainAnnotation.class).values()) {
             List<CorefMention> mentionsInChain = chain.getMentionsInTextualOrder();
             for (CorefMention mention : mentionsInChain) {
@@ -89,8 +101,7 @@ public class GherkinGenerator implements Generator {
                 }
             }
         }
-
-        return replaceWordsInSentence(userStorySentence, userStoryString, replaceMap);
+        return replaceMap;
     }
 
     private IndexedWord getSubject(CoreSentence sentence) {
@@ -120,13 +131,14 @@ public class GherkinGenerator implements Generator {
 
     private String replaceWordsInSentence(CoreSentence sentence, String string, Map<Integer, String> replaceMap) {
         List<Integer> indicesOfWordsToBeReplaced = new ArrayList<Integer>(replaceMap.keySet());
+        String updatedString = string;
         indicesOfWordsToBeReplaced.sort(Comparator.reverseOrder());
         for (int indexOfWordsToBeReplaced : indicesOfWordsToBeReplaced) {
             int startIndexInString = sentence.dependencyParse().getNodeByIndex(indexOfWordsToBeReplaced).beginPosition();
             int endIndexInString = sentence.dependencyParse().getNodeByIndex(indexOfWordsToBeReplaced).endPosition();
-            string = string.substring(0, startIndexInString) + replaceMap.get(indexOfWordsToBeReplaced) + string.substring(endIndexInString);
+            updatedString = updatedString.substring(0, startIndexInString) + replaceMap.get(indexOfWordsToBeReplaced) + updatedString.substring(endIndexInString);
         }
-        return string;
+        return updatedString;
     }
 
     private String heSheItDasSMussMit(String verb) {
