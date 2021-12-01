@@ -38,62 +38,61 @@ public class GherkinGenerator implements Generator {
         pipeline.annotate(document);
         CoreSentence userStorySentence = document.sentences().get(0);
 
-        Map<Integer, String> replaceMap = new HashMap<Integer, String>();
+        Map<Integer, String> replacements = new HashMap<Integer, String>();
 
-        replaceMap = switchToThirdPerson(document, userStorySentence, replaceMap);
-        replaceMap = resolvePronouns(document, userStorySentence, replaceMap);
+        replacements.putAll(switchToThirdPerson(document, userStorySentence));
+        replacements.putAll(resolvePronouns(document, userStorySentence, replacements));
 
-        return replaceWordsInSentence(userStorySentence, userStoryString, replaceMap);
+        return replaceWordsInSentence(userStorySentence, userStoryString, replacements);
     }
 
-    private Map<Integer, String> switchToThirdPerson(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replaceMap) throws SubjectNotFoundException {
+    private Map<Integer, String> switchToThirdPerson(CoreDocument document, CoreSentence userStorySentence) throws SubjectNotFoundException {
+        Map<Integer, String> newReplacements = new HashMap<Integer, String>();
         IndexedWord subject = getSubject(userStorySentence);
         if (subject == null) {
             throw new SubjectNotFoundException("The subject of the user story could not be identified.");
         }
         List<IndexedWord> coreferencesOfSubject =  getCoreferencesOfWord(document, subject);
-        if (!coreferencesOfSubject.contains(subject)) {
-            if (subject.word().equalsIgnoreCase("I")) {
-                replaceMap.put(subject.index(), "the user");
-                replaceMap = addSToVerbOfSubject(userStorySentence, replaceMap, subject);
-            }
+        if (coreferencesOfSubject.isEmpty()) {
+            coreferencesOfSubject.add(subject);
         }
         for (IndexedWord coreferenceOfSubject : coreferencesOfSubject) {
             if (coreferenceOfSubject.word().equalsIgnoreCase("I")) {
-                replaceMap.put(coreferenceOfSubject.index(), "the user");
-                replaceMap = addSToVerbOfSubject(userStorySentence, replaceMap, subject);
+                newReplacements.put(coreferenceOfSubject.index(), "the user");
+                newReplacements.putAll(addSToVerbOfSubject(userStorySentence, subject));
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("me")) {
-                replaceMap.put(coreferenceOfSubject.index(), "the user");
+                newReplacements.put(coreferenceOfSubject.index(), "the user");
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("my")) {
-                replaceMap.put(coreferenceOfSubject.index(), "the user’s");
+                newReplacements.put(coreferenceOfSubject.index(), "the user’s");
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("mine")) {
-                replaceMap.put(coreferenceOfSubject.index(), "the user’s");
+                newReplacements.put(coreferenceOfSubject.index(), "the user’s");
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("myself")) {
-                replaceMap.put(coreferenceOfSubject.index(), "the user");
+                newReplacements.put(coreferenceOfSubject.index(), "the user");
             }
         }
-        return replaceMap;
+        return newReplacements;
     }
 
-    private Map<Integer, String> resolvePronouns(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replaceMap) {
+    private Map<Integer, String> resolvePronouns(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replacements) {
+        Map<Integer, String> newReplacements = new HashMap<Integer, String>();
         for (CorefChain chain : document.annotation().get(CorefCoreAnnotations.CorefChainAnnotation.class).values()) {
             List<CorefMention> mentionsInChain = chain.getMentionsInTextualOrder();
             for (CorefMention mention : mentionsInChain) {
-                if (replaceMap.containsKey(mention.headIndex)) {
+                if (replacements.containsKey(mention.headIndex) || newReplacements.containsKey(mention.headIndex)) {
                     continue;
                 }
                 if (userStorySentence.dependencyParse().getNodeByIndex(mention.headIndex).tag().equals("PRP")) {
-                    replaceMap.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan);
+                    newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan);
                 } else if (userStorySentence.dependencyParse().getNodeByIndex(mention.headIndex).tag().equals("PRP$")) {
                     if (chain.getRepresentativeMention().mentionSpan.charAt(chain.getRepresentativeMention().mentionSpan.length() - 1) == 's') {
-                        replaceMap.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’");
+                        newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’");
                     } else {
-                        replaceMap.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’s");
+                        newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’s");
                     }
                 }
             }
         }
-        return replaceMap;
+        return newReplacements;
     }
 
     private IndexedWord getSubject(CoreSentence sentence) {
@@ -121,32 +120,33 @@ public class GherkinGenerator implements Generator {
         return new ArrayList<IndexedWord>();
     }
 
-    private Map<Integer, String> addSToVerbOfSubject(CoreSentence userStorySentence, Map<Integer, String> replaceMap, IndexedWord subject) {
+    private Map<Integer, String> addSToVerbOfSubject(CoreSentence userStorySentence, IndexedWord subject) {
+        Map<Integer, String> newReplacements = new HashMap<Integer, String>();
         IndexedWord parent = userStorySentence.dependencyParse().getParent(userStorySentence.dependencyParse().getNodeByIndex(subject.index()));
         if (parent.tag().equals("JJ")) {
             Set<IndexedWord> adjectiveChildren = userStorySentence.dependencyParse().getChildren(parent);
             for (IndexedWord adjectiveChild : adjectiveChildren) {
                 if (userStorySentence.dependencyParse().getEdge(parent, adjectiveChild).getRelation().getShortName().equals("cop")) {
                     if (adjectiveChild.tag().equals("VBP")) {
-                        replaceMap.put(adjectiveChild.index(), heSheItDasSMussMit(adjectiveChild.word()));
+                        newReplacements.put(adjectiveChild.index(), heSheItDasSMussMit(adjectiveChild.word()));
                     }
                     break;
                 }
             }
         } else if (parent.tag().equals("VBP")) {
-            replaceMap.put(parent.index(), heSheItDasSMussMit(parent.word()));
+            newReplacements.put(parent.index(), heSheItDasSMussMit(parent.word()));
         }
-        return replaceMap;
+        return newReplacements;
     }
 
-    private String replaceWordsInSentence(CoreSentence sentence, String string, Map<Integer, String> replaceMap) {
-        List<Integer> indicesOfWordsToBeReplaced = new ArrayList<Integer>(replaceMap.keySet());
+    private String replaceWordsInSentence(CoreSentence sentence, String string, Map<Integer, String> replacements) {
+        List<Integer> indicesOfWordsToBeReplaced = new ArrayList<Integer>(replacements.keySet());
         String updatedString = string;
         indicesOfWordsToBeReplaced.sort(Comparator.reverseOrder());
         for (int indexOfWordsToBeReplaced : indicesOfWordsToBeReplaced) {
             int startIndexInString = sentence.dependencyParse().getNodeByIndex(indexOfWordsToBeReplaced).beginPosition();
             int endIndexInString = sentence.dependencyParse().getNodeByIndex(indexOfWordsToBeReplaced).endPosition();
-            updatedString = updatedString.substring(0, startIndexInString) + replaceMap.get(indexOfWordsToBeReplaced) + updatedString.substring(endIndexInString);
+            updatedString = updatedString.substring(0, startIndexInString) + replacements.get(indexOfWordsToBeReplaced) + updatedString.substring(endIndexInString);
         }
         return updatedString;
     }
