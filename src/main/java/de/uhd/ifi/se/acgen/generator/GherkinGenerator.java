@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
+import de.uhd.ifi.se.acgen.exception.TokenNotFoundException;
 import de.uhd.ifi.se.acgen.model.UserStory;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
@@ -21,7 +21,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 public class GherkinGenerator implements Generator {
     
-    public List<String> generate(UserStory userStory) throws SubjectNotFoundException {
+    public List<String> generate(UserStory userStory) throws TokenNotFoundException {
         String userStoryString = userStory.getUserStoryString();
         List<String> acceptanceCriteria = new ArrayList<String>();
         userStoryString = preprocessing(userStoryString);
@@ -29,7 +29,7 @@ public class GherkinGenerator implements Generator {
         return acceptanceCriteria;
     }
 
-    private String preprocessing(String userStoryString) throws SubjectNotFoundException {
+    private String preprocessing(String userStoryString) throws TokenNotFoundException {
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,coref");
         props.setProperty("ssplit.isOneSentence", "true");
@@ -46,11 +46,11 @@ public class GherkinGenerator implements Generator {
         return replaceWordsInSentence(userStorySentence, userStoryString, replacements);
     }
 
-    private Map<Integer, String> switchToThirdPerson(CoreDocument document, CoreSentence userStorySentence) throws SubjectNotFoundException {
+    private Map<Integer, String> switchToThirdPerson(CoreDocument document, CoreSentence userStorySentence) throws TokenNotFoundException {
         Map<Integer, String> newReplacements = new HashMap<Integer, String>();
         IndexedWord subject = getSubject(userStorySentence);
         if (subject == null) {
-            throw new SubjectNotFoundException("The subject of the user story could not be identified.");
+            throw new TokenNotFoundException("The subject of the user story could not be identified.");
         }
         List<IndexedWord> coreferencesOfSubject =  getCoreferencesOfWord(document, subject);
         if (coreferencesOfSubject.isEmpty()) {
@@ -95,14 +95,28 @@ public class GherkinGenerator implements Generator {
         return newReplacements;
     }
 
-    private IndexedWord getSubject(CoreSentence sentence) {
-        IndexedWord root = sentence.dependencyParse().getFirstRoot();
-        for (IndexedWord child : sentence.dependencyParse().getChildList(root)) {
-            if (sentence.dependencyParse().getEdge(root, child).getRelation().getShortName().equals("nsubj") && child.tag().equals("PRP") && child.word().equalsIgnoreCase("I")) {
+    private IndexedWord getSubject(CoreSentence sentence) throws TokenNotFoundException {
+        IndexedWord verb = getVerb(sentence);
+        for (IndexedWord child : sentence.dependencyParse().getChildList(verb)) {
+            if (sentence.dependencyParse().getEdge(verb, child).getRelation().getShortName().equals("nsubj") && child.tag().equals("PRP") && child.word().equalsIgnoreCase("I")) {
                 return child;
             }
         }
         return null;
+    }
+
+    private IndexedWord getVerb(CoreSentence sentence) throws TokenNotFoundException {
+        IndexedWord root = sentence.dependencyParse().getFirstRoot();
+        if (root.word().equalsIgnoreCase("want") && root.tag().equals("VBP")) {
+            return root;
+        }
+        List<IndexedWord> possibleVerbs = sentence.dependencyParse().getAllNodesByPartOfSpeechPattern("VBP");
+        possibleVerbs.removeIf(possibleVerb -> (!possibleVerb.word().equalsIgnoreCase("want")));
+        if (possibleVerbs.size() == 0) {
+            throw new TokenNotFoundException("The verb of the user story could not be identified.");
+        }
+        possibleVerbs.sort((possibleVerb, otherPossibleVerb) -> (sentence.dependencyParse().getPathToRoot(possibleVerb).size() - sentence.dependencyParse().getPathToRoot(otherPossibleVerb).size()));
+        return possibleVerbs.get(0);
     }
 
     private List<IndexedWord> getCoreferencesOfWord(CoreDocument document, IndexedWord word) {

@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.uhd.ifi.se.acgen.exception.NoUserStoryException;
-import de.uhd.ifi.se.acgen.exception.SubjectNotFoundException;
+import de.uhd.ifi.se.acgen.exception.TokenNotFoundException;
 import de.uhd.ifi.se.acgen.generator.Generator;
 
 public class UserStory {
@@ -116,7 +116,7 @@ public class UserStory {
         return wasCutAtListOrNote;
     }
 
-    public List<String> getAcceptanceCriteria(Generator generator) throws SubjectNotFoundException {
+    public List<String> getAcceptanceCriteria(Generator generator) throws TokenNotFoundException {
         String generatorName = generator.getClass().getName();
         assert(!generatorName.equals(""));
         if (!acceptanceCriteria.containsKey(generatorName)) {
