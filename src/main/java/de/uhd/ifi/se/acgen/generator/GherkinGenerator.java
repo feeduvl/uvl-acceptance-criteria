@@ -59,7 +59,7 @@ public class GherkinGenerator implements Generator {
         for (IndexedWord coreferenceOfSubject : coreferencesOfSubject) {
             if (coreferenceOfSubject.word().equalsIgnoreCase("I")) {
                 newReplacements.put(coreferenceOfSubject.index(), "the user");
-                newReplacements.putAll(addSToVerbOfSubject(userStorySentence, subject));
+                newReplacements.putAll(addSToVerbOfSubject(userStorySentence, coreferenceOfSubject));
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("me")) {
                 newReplacements.put(coreferenceOfSubject.index(), "the user");
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("my")) {
@@ -123,18 +123,28 @@ public class GherkinGenerator implements Generator {
     private Map<Integer, String> addSToVerbOfSubject(CoreSentence userStorySentence, IndexedWord subject) {
         Map<Integer, String> newReplacements = new HashMap<Integer, String>();
         IndexedWord parent = userStorySentence.dependencyParse().getParent(userStorySentence.dependencyParse().getNodeByIndex(subject.index()));
-        if (parent.tag().equals("JJ")) {
-            Set<IndexedWord> adjectiveChildren = userStorySentence.dependencyParse().getChildren(parent);
-            for (IndexedWord adjectiveChild : adjectiveChildren) {
-                if (userStorySentence.dependencyParse().getEdge(parent, adjectiveChild).getRelation().getShortName().equals("cop")) {
-                    if (adjectiveChild.tag().equals("VBP")) {
-                        newReplacements.put(adjectiveChild.index(), heSheItDasSMussMit(adjectiveChild.word()));
+        if (parent.tag().equals("VBP")) {
+            newReplacements.put(parent.index(), heSheItDasSMussMit(parent.word()));
+        } else if (parent.tag().equals("JJ") || parent.tag().startsWith("NN")) {
+            Set<IndexedWord> children = userStorySentence.dependencyParse().getChildren(parent);
+            for (IndexedWord child : children) {
+                if (userStorySentence.dependencyParse().getEdge(parent, child).getRelation().getShortName().equals("cop")) {
+                    if (child.tag().equals("VBP")) {
+                        newReplacements.put(child.index(), heSheItDasSMussMit(child.word()));
                     }
                     break;
                 }
             }
-        } else if (parent.tag().equals("VBP")) {
-            newReplacements.put(parent.index(), heSheItDasSMussMit(parent.word()));
+        } else if (parent.tag().equals("VB") || parent.tag().equals("VBN")) {
+            Set<IndexedWord> children = userStorySentence.dependencyParse().getChildren(parent);
+            for (IndexedWord child : children) {
+                if (userStorySentence.dependencyParse().getEdge(parent, child).getRelation().getShortName().startsWith("aux")) {
+                    if (child.tag().equals("VBP")) {
+                        newReplacements.put(child.index(), heSheItDasSMussMit(child.word()));
+                    }
+                    break;
+                }
+            }
         }
         return newReplacements;
     }
