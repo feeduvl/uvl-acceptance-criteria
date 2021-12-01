@@ -18,6 +18,7 @@ public class RunRest {
     public static UvlResponse addAcceptanceCriteriaToResponse(JsonArray documents, UvlResponse response) {
         int errors = 0;
         int warnings = 0;
+        int infos = 0;
         for (JsonElement document : documents) {
             int userStoryNumber = document.getAsJsonObject().get("number").getAsInt();
             String userStoryText = document.getAsJsonObject().get("text").getAsString();
@@ -29,7 +30,11 @@ public class RunRest {
                 }
                 if (!userStory.containsReason()) {
                     warnings += 1;
-                    response.addAC("WARNING: A reason could not be found. Please make sure the reason of the user story is declared after the role and the goal using the syntax \"so that [reason]\".", userStoryNumber);
+                    response.addAC("WARNING: A reason could not be found. Please make sure the reason of the user story is declared after the role and the goal using the syntax “so that [reason]”.", userStoryNumber);
+                }
+                if (userStory.wasCutAtListOrNote()) {
+                    infos += 1;
+                    response.addAC("INFO: The user story was cut at a bullet point list or a part of text starting with “\\\\”. Please refrain from using these syntaxes within a user story and make sure to end your user story with a sentence period.", userStoryNumber);
                 }
             } catch (Exception e) {
                 errors += 1;
@@ -38,6 +43,7 @@ public class RunRest {
         }
         response.addMetric("errorCount", errors);
         response.addMetric("warningCount", warnings);
+        response.addMetric("infoCount", infos);
         return response;
     }
     

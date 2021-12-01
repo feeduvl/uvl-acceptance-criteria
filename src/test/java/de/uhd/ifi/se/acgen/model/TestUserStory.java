@@ -125,7 +125,7 @@ public class TestUserStory {
     }
 
     @Test
-    public void testUserStoriesWithStarredLine() {
+    public void testUserStoriesWithList() {
         String userStoryString = "As a developer, I want this user story to\n" +
                 "* contain\n" +
                 "* a\n" +
@@ -135,25 +135,59 @@ public class TestUserStory {
                 "This is another sentence, also not being part of the user story.";
         try {
             UserStory userStory = new UserStory(userStoryString);
-            assertTrue(userStory.getGoal().contains("and see what happens"));
+            assertTrue(userStory.wasCutAtListOrNote());
+            assertTrue(userStory.getGoal().endsWith("to"));
+            assertFalse(userStory.getGoal().contains("* contain"));
+            assertFalse(userStory.getGoal().contains("and see what happens"));
         } catch (NoUserStoryException e) {
             fail();
         }
 
         userStoryString = "As a developer, I want this user story to\n" +
-                "* not\n" +
-                "* contain\n" +
-                "* a\n" +
-                "* sentence\n" +
-                "* period.\n" +
-                "and see what happens";
+                "- contain\n" +
+                "- a\n" +
+                "- dashed\n" +
+                "- list.\n" +
+                "and see what happens.\n" + 
+                "This is another sentence, also not being part of the user story.";
         try {
             UserStory userStory = new UserStory(userStoryString);
-            assertTrue(userStory.getGoal().contains("and see what happens"));
-            assertTrue(userStory.getUserStoryString().equals(userStoryString));
+            assertTrue(userStory.wasCutAtListOrNote());
+            assertTrue(userStory.getGoal().endsWith("to"));
+            assertFalse(userStory.getGoal().contains("* contain"));
+            assertFalse(userStory.getGoal().contains("and see what happens"));
         } catch (NoUserStoryException e) {
             fail();
         }
     }
 
+    @Test
+    public void testUserStoriesWithNote() {
+        String userStoryString = "As a developer, I want this user story to contain a note\n" +
+                "\\\\ Note:\n" +
+                "This is the note.\n" +
+                "\n" +
+                "so that this part is removed.\n" + 
+                "This is another sentence, also not being part of the user story.";
+        try {
+            UserStory userStory = new UserStory(userStoryString);
+            assertTrue(userStory.getGoal().endsWith("note"));
+            assertFalse(userStory.containsReason());
+            assertTrue(userStory.wasCutAtListOrNote());
+        } catch (NoUserStoryException e) {
+            fail();
+        }
+
+        userStoryString = "As a developer, I want this user story to contain a note.\n" +
+                "\\\\ Note:\n" +
+                "This is the note.\n";
+        try {
+            UserStory userStory = new UserStory(userStoryString);
+            assertTrue(userStory.getGoal().endsWith("note."));
+            assertFalse(userStory.containsReason());
+            assertFalse(userStory.wasCutAtListOrNote());
+        } catch (NoUserStoryException e) {
+            fail();
+        }
+    }
 }
