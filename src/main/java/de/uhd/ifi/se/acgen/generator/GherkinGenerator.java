@@ -52,23 +52,16 @@ public class GherkinGenerator implements Generator {
             throw new SubjectNotFoundException("The subject of the user story could not be identified.");
         }
         List<IndexedWord> coreferencesOfSubject =  getCoreferencesOfWord(document, subject);
+        if (!coreferencesOfSubject.contains(subject)) {
+            if (subject.word().equalsIgnoreCase("I")) {
+                replaceMap.put(subject.index(), "the user");
+                replaceMap = addSToVerbOfSubject(userStorySentence, replaceMap, subject);
+            }
+        }
         for (IndexedWord coreferenceOfSubject : coreferencesOfSubject) {
             if (coreferenceOfSubject.word().equalsIgnoreCase("I")) {
                 replaceMap.put(coreferenceOfSubject.index(), "the user");
-                IndexedWord parent = userStorySentence.dependencyParse().getParent(userStorySentence.dependencyParse().getNodeByIndex(coreferenceOfSubject.index()));
-                if (parent.tag().equals("JJ")) {
-                    Set<IndexedWord> adjectiveChildren = userStorySentence.dependencyParse().getChildren(parent);
-                    for (IndexedWord adjectiveChild : adjectiveChildren) {
-                        if (userStorySentence.dependencyParse().getEdge(parent, adjectiveChild).getRelation().getShortName().equals("cop")) {
-                            if (adjectiveChild.tag().equals("VBP")) {
-                                replaceMap.put(adjectiveChild.index(), heSheItDasSMussMit(adjectiveChild.word()));
-                            }
-                            break;
-                        }
-                    }
-                } else if (parent.tag().equals("VBP")) {
-                    replaceMap.put(parent.index(), heSheItDasSMussMit(parent.word()));
-                }
+                replaceMap = addSToVerbOfSubject(userStorySentence, replaceMap, subject);
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("me")) {
                 replaceMap.put(coreferenceOfSubject.index(), "the user");
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("my")) {
@@ -126,6 +119,24 @@ public class GherkinGenerator implements Generator {
             }
         }
         return new ArrayList<IndexedWord>();
+    }
+
+    private Map<Integer, String> addSToVerbOfSubject(CoreSentence userStorySentence, Map<Integer, String> replaceMap, IndexedWord subject) {
+        IndexedWord parent = userStorySentence.dependencyParse().getParent(userStorySentence.dependencyParse().getNodeByIndex(subject.index()));
+        if (parent.tag().equals("JJ")) {
+            Set<IndexedWord> adjectiveChildren = userStorySentence.dependencyParse().getChildren(parent);
+            for (IndexedWord adjectiveChild : adjectiveChildren) {
+                if (userStorySentence.dependencyParse().getEdge(parent, adjectiveChild).getRelation().getShortName().equals("cop")) {
+                    if (adjectiveChild.tag().equals("VBP")) {
+                        replaceMap.put(adjectiveChild.index(), heSheItDasSMussMit(adjectiveChild.word()));
+                    }
+                    break;
+                }
+            }
+        } else if (parent.tag().equals("VBP")) {
+            replaceMap.put(parent.index(), heSheItDasSMussMit(parent.word()));
+        }
+        return replaceMap;
     }
 
     private String replaceWordsInSentence(CoreSentence sentence, String string, Map<Integer, String> replaceMap) {
