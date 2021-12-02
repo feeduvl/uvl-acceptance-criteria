@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -18,6 +19,7 @@ import edu.stanford.nlp.ling.IndexedWord;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.semgraph.SemanticGraph;
 
 public class GherkinGenerator implements Generator {
     
@@ -26,6 +28,17 @@ public class GherkinGenerator implements Generator {
         List<String> acceptanceCriteria = new ArrayList<String>();
         userStoryString = preprocessing(userStoryString);
         acceptanceCriteria.add(userStoryString);
+
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse");
+        props.setProperty("ssplit.isOneSentence", "true");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+        CoreDocument document = new CoreDocument(userStoryString);
+        pipeline.annotate(document);
+        CoreSentence userStorySentence = document.sentences().get(0);
+
+        acceptanceCriteria.addAll(extractRoleInformation(document, userStorySentence, userStoryString));
+        
         return acceptanceCriteria;
     }
 
@@ -96,7 +109,7 @@ public class GherkinGenerator implements Generator {
     }
 
     private IndexedWord getSubject(CoreSentence sentence) throws TokenNotFoundException {
-        IndexedWord verb = getVerb(sentence);
+        IndexedWord verb = getVerb(sentence, false);
         for (IndexedWord child : sentence.dependencyParse().getChildList(verb)) {
             if (sentence.dependencyParse().getEdge(verb, child).getRelation().getShortName().equals("nsubj") && child.tag().equals("PRP") && child.word().equalsIgnoreCase("I")) {
                 return child;
@@ -105,13 +118,16 @@ public class GherkinGenerator implements Generator {
         return null;
     }
 
-    private IndexedWord getVerb(CoreSentence sentence) throws TokenNotFoundException {
+    private IndexedWord getVerb(CoreSentence sentence, boolean isThirdPerson) throws TokenNotFoundException {
+        String expectedVerb = isThirdPerson ? heSheItDasSMussMit("want") : "want";
+        String expectedTag = isThirdPerson ? "VBZ" : "VBP";
+
         IndexedWord root = sentence.dependencyParse().getFirstRoot();
-        if (root.word().equalsIgnoreCase("want") && root.tag().equals("VBP")) {
+        if (root.word().equalsIgnoreCase(expectedVerb) && root.tag().equals(expectedTag)) {
             return root;
         }
-        List<IndexedWord> possibleVerbs = sentence.dependencyParse().getAllNodesByPartOfSpeechPattern("VBP");
-        possibleVerbs.removeIf(possibleVerb -> (!possibleVerb.word().equalsIgnoreCase("want")));
+        List<IndexedWord> possibleVerbs = sentence.dependencyParse().getAllNodesByPartOfSpeechPattern(expectedTag);
+        possibleVerbs.removeIf(possibleVerb -> (!possibleVerb.word().equalsIgnoreCase(expectedVerb)));
         if (possibleVerbs.size() == 0) {
             throw new TokenNotFoundException("The verb of the user story could not be identified.");
         }
@@ -140,24 +156,14 @@ public class GherkinGenerator implements Generator {
         if (parent.tag().equals("VBP")) {
             newReplacements.put(parent.index(), heSheItDasSMussMit(parent.word()));
         } else if (parent.tag().equals("JJ") || parent.tag().startsWith("NN")) {
-            Set<IndexedWord> children = userStorySentence.dependencyParse().getChildren(parent);
-            for (IndexedWord child : children) {
-                if (userStorySentence.dependencyParse().getEdge(parent, child).getRelation().getShortName().equals("cop")) {
-                    if (child.tag().equals("VBP")) {
-                        newReplacements.put(child.index(), heSheItDasSMussMit(child.word()));
-                    }
-                    break;
-                }
+            IndexedWord child = getFirstChildWithRelationAndTag(userStorySentence.dependencyParse(), parent, "cop", "VBP");
+            if (child != null) {
+                newReplacements.put(child.index(), heSheItDasSMussMit(child.word()));
             }
         } else if (parent.tag().equals("VB") || parent.tag().equals("VBN")) {
-            Set<IndexedWord> children = userStorySentence.dependencyParse().getChildren(parent);
-            for (IndexedWord child : children) {
-                if (userStorySentence.dependencyParse().getEdge(parent, child).getRelation().getShortName().startsWith("aux")) {
-                    if (child.tag().equals("VBP")) {
-                        newReplacements.put(child.index(), heSheItDasSMussMit(child.word()));
-                    }
-                    break;
-                }
+            IndexedWord child = getFirstChildWithRelationAndTag(userStorySentence.dependencyParse(), parent, "aux", "VBP");
+            if (child != null) {
+                newReplacements.put(child.index(), heSheItDasSMussMit(child.word()));
             }
         }
         return newReplacements;
@@ -186,14 +192,60 @@ public class GherkinGenerator implements Generator {
         } else if (verb.equals("go")) {
             return "goes";
         }
-        if (verb.substring(verb.length() - 1).equals("x") || verb.substring(verb.length() - 2).equals("ss") || verb.substring(verb.length() - 2).equals("ch") || verb.substring(verb.length() - 2).equals("sh")) {
+        if (verb.toLowerCase().endsWith("x") || verb.toLowerCase().endsWith("ss") || verb.toLowerCase().endsWith("ch") || verb.toLowerCase().endsWith("sh")) {
             return verb + "es";
         }
         
-        if (verb.charAt(verb.length() - 1) == 'y' && !Arrays.asList('a', 'e', 'i', 'o', 'u').contains(verb.charAt(verb.length() - 2))) {
+        if (verb.toLowerCase().endsWith("y") && !Arrays.asList('a', 'e', 'i', 'o', 'u').contains(verb.charAt(verb.length() - 2))) {
             return verb.substring(0, verb.length() - 1) + "ies";
         }
         return verb + "s";
+    }
+
+    private Set<String> extractRoleInformation(CoreDocument document, CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
+        Set<String> acceptanceCriteria = new HashSet<String>();
+
+        Set<IndexedWord> wordsInUserStorySentence = userStorySentence.dependencyParse().getSubgraphVertices(userStorySentence.dependencyParse().getFirstRoot());
+        
+        int indexAs = Integer.MAX_VALUE;
+        int indexTheUserWants = 0;
+        for (IndexedWord word : wordsInUserStorySentence) {
+            if (word.word().equalsIgnoreCase("as") && word.tag().equals("IN")) {
+                indexAs = Math.min(indexAs, word.index());
+            } else if (word.word().equalsIgnoreCase("the") && word.tag().equals("DT")) {
+                if (wordsInUserStorySentence.size() < word.index() + 2) {
+                    continue;
+                }
+                IndexedWord expectedUser = userStorySentence.dependencyParse().getNodeByIndex(word.index() + 1);
+                IndexedWord expectedWants = userStorySentence.dependencyParse().getNodeByIndex(word.index() + 2);
+                if (expectedUser.word().equalsIgnoreCase("user") && expectedUser.tag().equals("NN") && expectedWants.word().equalsIgnoreCase("wants") && expectedWants.tag().equals("VBZ")) {
+                    indexTheUserWants = Math.max(indexTheUserWants, word.index());
+                }
+            }
+        }
+
+        if (indexAs == Integer.MAX_VALUE || indexTheUserWants == 0) {
+            acceptanceCriteria.add("WARNING: The role of the user story could not be identified.");
+        } else {
+            int beginIndex = userStorySentence.dependencyParse().getNodeByIndex(indexAs + 1).beginPosition();
+            if (userStorySentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).tag().equals(",")) {
+                indexTheUserWants -= 1;
+            }
+            int endIndex = userStorySentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).endPosition();
+            acceptanceCriteria.add("GIVEN " + userStoryString.substring(beginIndex, endIndex) + " is using the software");
+        }
+
+        return acceptanceCriteria;
+    }
+
+    private IndexedWord getFirstChildWithRelationAndTag(SemanticGraph graph, IndexedWord parent, String relationShortName, String tag) {
+        List<IndexedWord> children = graph.getChildList(parent);
+        for (IndexedWord child : children) {
+            if (graph.getEdge(parent, child).getRelation().getShortName().startsWith(relationShortName) && child.tag().equals(tag)) {
+                return child;
+            }
+        }
+        return null;
     }
 
 }

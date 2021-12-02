@@ -37,15 +37,15 @@ public class UserStory {
         if (indexIWant == -1) {
             throw new NoUserStoryException("A goal could not be found. Please make sure the goal of the user story is declared after the role using the syntax \"I want [goal]\".");
         }
-        role = shortenedUserStoryString.substring(0, indexIWant);
+        role = shortenedUserStoryString.substring(0, indexIWant).replaceAll("\\*", "").replaceAll("\\s+", " ");
         int indexSoThat = shortenedUserStoryString.toUpperCase().indexOf("SO THAT", indexIWant);
         wasCutAtListOrNote = false;
         if (indexSoThat == -1) {
-            goal = shortenedUserStoryString.substring(indexIWant, findSentencePeriodOrEndOfString(shortenedUserStoryString, indexIWant));
+            goal = shortenedUserStoryString.substring(indexIWant, findSentencePeriodOrEndOfString(shortenedUserStoryString, indexIWant)).replaceAll("\\*", "").replaceAll("\\s+", " ");
             reason = "";
         } else {
-            goal = shortenedUserStoryString.substring(indexIWant, indexSoThat);
-            reason = shortenedUserStoryString.substring(indexSoThat, findSentencePeriodOrEndOfString(shortenedUserStoryString, indexSoThat));
+            goal = shortenedUserStoryString.substring(indexIWant, indexSoThat).replaceAll("\\*", "").replaceAll("\\s+", " ");
+            reason = shortenedUserStoryString.substring(indexSoThat, findSentencePeriodOrEndOfString(shortenedUserStoryString, indexSoThat)).replaceAll("\\*", "").replaceAll("\\s+", " ");
         }
     }
 
