@@ -37,7 +37,7 @@ public class GherkinGenerator implements Generator {
         pipeline.annotate(document);
         CoreSentence userStorySentence = document.sentences().get(0);
 
-        acceptanceCriteria.addAll(extractRoleInformation(document, userStorySentence, userStoryString));
+        acceptanceCriteria.addAll(extractRoleInformation(userStorySentence, userStoryString));
         
         return acceptanceCriteria;
     }
@@ -202,7 +202,7 @@ public class GherkinGenerator implements Generator {
         return verb + "s";
     }
 
-    private Set<String> extractRoleInformation(CoreDocument document, CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
+    private Set<String> extractRoleInformation(CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
         Set<String> acceptanceCriteria = new HashSet<String>();
 
         Set<IndexedWord> wordsInUserStorySentence = userStorySentence.dependencyParse().getSubgraphVertices(userStorySentence.dependencyParse().getFirstRoot());
