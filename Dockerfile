@@ -25,4 +25,10 @@ WORKDIR /uvl-acceptance-criteria
 COPY . .
 ENV _JAVA_OPTIONS "-Xmx2g"
 RUN mvn package
+
+ARG codecov_secret
+RUN curl -s https://codecov.io/bash >> ./codecov
+RUN chmod +x ./codecov
+RUN ./codecov -t $codecov_secret
+
 CMD ["mvn", "exec:java"]
