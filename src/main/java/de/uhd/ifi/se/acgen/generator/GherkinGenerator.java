@@ -270,7 +270,7 @@ public class GherkinGenerator implements Generator {
         for (int i = beginIndex; i < nerTags.size(); i++) {
             if (!nerTags.get(i).equals("UI") && !posTags.get(i).startsWith("NN") && !posTags.get(i).equals(",")) {
                 endIndex = i - 1;
-                if (!sentence.tokensAsStrings().get(i).equals("under") && !sentence.tokensAsStrings().get(i).equals("via") && !(sentence.tokensAsStrings().get(i).equals("in") && nerTags.get(i + 1).equals("UI")) && !sentence.tokensAsStrings().get(i).equals("of") && !(sentence.tokensAsStrings().get(i - 1).equals("of") && posTags.get(i).equals("DT"))) {
+                if (!sentence.tokensAsStrings().get(i).equals("under") && !sentence.tokensAsStrings().get(i).equals("via") && !(sentence.tokensAsStrings().get(i).equals("in") && nerTags.get(i + 1).equals("UI")) && !sentence.tokensAsStrings().get(i).equals("of") && !sentence.tokensAsStrings().get(i).equals("for") && !((sentence.tokensAsStrings().get(i - 1).equals("of") || sentence.tokensAsStrings().get(i - 1).equals("for")) && posTags.get(i).equals("DT"))) {
                     break;
                 }
             }
