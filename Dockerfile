@@ -23,8 +23,7 @@ COPY settings-docker.xml /usr/share/maven/ref/
 ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh"]
 WORKDIR /uvl-acceptance-criteria
 COPY . .
-ENV _JAVA_OPTIONS "-Xmx2g"
-RUN mvn package
+RUN _JAVA_OPTIONS="-Xmx2g" mvn package
 
 ARG codecov_secret
 RUN curl -s https://codecov.io/bash >> ./codecov
