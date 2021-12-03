@@ -30,15 +30,17 @@ public class GherkinGenerator implements Generator {
         acceptanceCriteria.add(userStoryString);
 
         Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse");
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,regexner");
         props.setProperty("ssplit.isOneSentence", "true");
+        props.setProperty("regexner.mapping", "src/main/java/de/uhd/ifi/se/acgen/generator/regexner/ui-mapping.txt");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         CoreDocument document = new CoreDocument(userStoryString);
         pipeline.annotate(document);
         CoreSentence userStorySentence = document.sentences().get(0);
 
         acceptanceCriteria.addAll(extractRoleInformation(userStorySentence, userStoryString));
-        
+        acceptanceCriteria.addAll(extractUIInformation(userStorySentence, userStoryString));
+
         return acceptanceCriteria;
     }
 
@@ -246,6 +248,40 @@ public class GherkinGenerator implements Generator {
             }
         }
         return null;
+    }
+
+    private Set<String> extractUIInformation(CoreSentence sentence, String userStoryString) {
+        Set<String> acceptanceCriteria = new HashSet<String>();
+        List<String> nerTags = sentence.nerTags();
+        List<String> posTags = sentence.posTags();
+        int beginIndex = Integer.MAX_VALUE;
+        for (int i = 0; i < nerTags.size(); i++) {
+            if (nerTags.get(i).equals("UI")) {
+                beginIndex = i;
+                break;
+            }
+        }
+        if (beginIndex == Integer.MAX_VALUE) {
+            return acceptanceCriteria;
+        }
+        int endIndex = 0;
+        for (int i = beginIndex; i < nerTags.size(); i++) {
+            if (!nerTags.get(i).equals("UI") && !posTags.get(i).startsWith("NN") && !posTags.get(i).equals(",")) {
+                endIndex = i - 1;
+                if (!sentence.tokensAsStrings().get(i).equals("under") && !sentence.tokensAsStrings().get(i).equals("via") && !(sentence.tokensAsStrings().get(i).equals("in") && nerTags.get(i + 1).equals("UI"))) {
+                    break;
+                }
+            }
+        }
+        if (endIndex == 0) {
+            endIndex = nerTags.size() - 1;
+        }
+        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex + 1).beginPosition();
+        beginPosition = userStoryString.indexOf("the", beginPosition);
+        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex + 1).endPosition();
+        acceptanceCriteria.add("GIVEN the active user interface is " + userStoryString.substring(beginPosition, endPosition));
+
+        return acceptanceCriteria;
     }
 
 }

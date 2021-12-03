@@ -1,0 +1,1 @@
+( [{ word:"displayed" }]? /in|of|via/? [ { word:"the" } ] ( [ { word:/[A-Za-z]+/ } ]{0,2} /[Vv]iew|[Cc]ockpit|[Ff]rontend|[Oo]verview|[Dd]etails/ | [ /[A-Z]{1,3}C/ ] ) )	UI
