@@ -28,7 +28,7 @@ public class GherkinGenerator implements Generator {
         List<String> acceptanceCriteria = new ArrayList<String>();
         userStoryString = preprocessing(userStoryString);
         if (debug) {
-            acceptanceCriteria.add(userStoryString);
+            acceptanceCriteria.add("DEBUG: " + userStoryString);
         }
 
         Properties props = new Properties();
