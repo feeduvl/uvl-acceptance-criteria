@@ -116,11 +116,11 @@ public class UserStory {
         return wasCutAtListOrNote;
     }
 
-    public List<String> getAcceptanceCriteria(Generator generator) throws TokenNotFoundException {
+    public List<String> getAcceptanceCriteria(Generator generator, boolean debug) throws TokenNotFoundException {
         String generatorName = generator.getClass().getName();
         assert(!generatorName.equals(""));
         if (!acceptanceCriteria.containsKey(generatorName)) {
-            acceptanceCriteria.put(generatorName, generator.generate(this));
+            acceptanceCriteria.put(generatorName, generator.generate(this, debug));
         }
         return acceptanceCriteria.get(generatorName);
     }

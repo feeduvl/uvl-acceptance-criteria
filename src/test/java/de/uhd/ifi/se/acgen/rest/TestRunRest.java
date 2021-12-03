@@ -21,7 +21,7 @@ public class TestRunRest extends TestApp {
         JsonObject jsonRequest = new JsonObject();
         jsonRequest.addProperty("method", "acceptance-criteria");
         JsonObject params = new JsonObject();
-        params.addProperty("alpha", 0.1);
+        params.addProperty("debug", false);
         jsonRequest.add("params", params);
         JsonObject dataset = new JsonObject();
         JsonArray documents = new JsonArray();

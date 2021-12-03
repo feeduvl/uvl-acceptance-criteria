@@ -22,9 +22,9 @@ paths:
                 params:
                   type: object
                   properties:
-                    alpha:
-                      type: number
-                      example: 0.1
+                    debug:
+                      type: boolean
+                      example: false
                 dataset:
                   type: object
                   properties:

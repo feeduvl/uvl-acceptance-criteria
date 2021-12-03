@@ -13,7 +13,7 @@ See [swagger.yaml](../master/swagger.yaml) for details. The tool at https://edit
 
 ## Method Parameter
 
-None.
+`debug` – Whether to include debug information, such as the preprocessed user story.
 
 ## License
 Free use of this software is granted under the terms of the [GPL version 3](https://www.gnu.org/licenses/gpl-3.0.de.html) (GPL 3.0).

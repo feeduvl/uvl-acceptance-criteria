@@ -23,11 +23,13 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 
 public class GherkinGenerator implements Generator {
     
-    public List<String> generate(UserStory userStory) throws TokenNotFoundException {
+    public List<String> generate(UserStory userStory, boolean debug) throws TokenNotFoundException {
         String userStoryString = userStory.getUserStoryString();
         List<String> acceptanceCriteria = new ArrayList<String>();
         userStoryString = preprocessing(userStoryString);
-        acceptanceCriteria.add(userStoryString);
+        if (debug) {
+            acceptanceCriteria.add(userStoryString);
+        }
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,depparse,regexner");

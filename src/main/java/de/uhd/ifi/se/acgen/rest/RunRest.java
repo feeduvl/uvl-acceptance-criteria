@@ -15,7 +15,7 @@ import spark.Response;
 
 public class RunRest {
     
-    public static UvlResponse addAcceptanceCriteriaToResponse(JsonArray documents, UvlResponse response) {
+    public static UvlResponse addAcceptanceCriteriaToResponse(JsonArray documents, UvlResponse response, boolean debug) {
         int errors = 0;
         int warnings = 0;
         int infos = 0;
@@ -24,7 +24,7 @@ public class RunRest {
             String userStoryText = document.getAsJsonObject().get("text").getAsString();
             try {
                 UserStory userStory = new UserStory(userStoryText);
-                List<String> acceptanceCriteria = userStory.getAcceptanceCriteria(new GherkinGenerator());
+                List<String> acceptanceCriteria = userStory.getAcceptanceCriteria(new GherkinGenerator(), debug);
                 for (String acceptanceCriterion : acceptanceCriteria) {
                     response.addAC(acceptanceCriterion, userStoryNumber);
                 }
@@ -53,9 +53,10 @@ public class RunRest {
             JsonObject jsonRequest = new Gson().fromJson(req.body(), JsonObject.class);
             res.header("Content-Type", "application/json");
             JsonArray documents = jsonRequest.get("dataset").getAsJsonObject().get("documents").getAsJsonArray();
+            boolean debug = jsonRequest.get("params").getAsJsonObject().get("debug").getAsBoolean();
             UvlResponse response = new UvlResponse();
             response.addMetric("count", documents.size());
-            addAcceptanceCriteriaToResponse(documents, response);
+            addAcceptanceCriteriaToResponse(documents, response, debug);
             long finish = System.currentTimeMillis();
             response.addMetric("runtime", finish - start);
             return response;     

@@ -7,6 +7,6 @@ import de.uhd.ifi.se.acgen.model.UserStory;
 
 public interface Generator {
     
-    public List<String> generate(UserStory userStory) throws TokenNotFoundException;
+    public List<String> generate(UserStory userStory, boolean debug) throws TokenNotFoundException;
 
 }
