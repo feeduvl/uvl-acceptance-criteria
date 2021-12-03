@@ -278,6 +278,9 @@ public class GherkinGenerator implements Generator {
         if (endIndex == 0) {
             endIndex = nerTags.size() - 1;
         }
+        if (posTags.get(endIndex).equals(",")) {
+            endIndex -= 1;
+        }
         int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex + 1).beginPosition();
         beginPosition = userStoryString.indexOf("the", beginPosition);
         int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex + 1).endPosition();
