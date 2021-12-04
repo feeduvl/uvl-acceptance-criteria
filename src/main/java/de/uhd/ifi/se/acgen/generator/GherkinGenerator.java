@@ -256,11 +256,15 @@ public class GherkinGenerator implements Generator {
         Set<String> acceptanceCriteria = new HashSet<String>();
         List<String> nerTags = sentence.nerTags();
         List<String> posTags = sentence.posTags();
+        List<String> tokensAsStrings = sentence.tokensAsStrings();
         int beginIndex = Integer.MAX_VALUE;
-        for (int i = 0; i < nerTags.size(); i++) {
+        for (int i = 0; i < nerTags.size() - 1; i++) {
             if (nerTags.get(i).equals("UI")) {
                 beginIndex = i;
                 break;
+            }
+            if (tokensAsStrings.get(i).equalsIgnoreCase("so") && tokensAsStrings.get(i + 1).equalsIgnoreCase("that")) {
+                return acceptanceCriteria;
             }
         }
         if (beginIndex == Integer.MAX_VALUE) {
@@ -268,17 +272,30 @@ public class GherkinGenerator implements Generator {
         }
         int endIndex = 0;
         for (int i = beginIndex; i < nerTags.size(); i++) {
-            if (!nerTags.get(i).equals("UI") && !posTags.get(i).startsWith("NN") && !posTags.get(i).equals(",")) {
+            if (i < endIndex) {
+                continue;
+            }
+            if (!nerTags.get(i).equals("UI") && !posTags.get(i).startsWith("NN") && !posTags.get(i).equals(",") && !posTags.get(i).equals("HYPH")) {
                 endIndex = i - 1;
-                if (!sentence.tokensAsStrings().get(i).equals("under") && !sentence.tokensAsStrings().get(i).equals("via") && !(sentence.tokensAsStrings().get(i).equals("in") && nerTags.get(i + 1).equals("UI")) && !sentence.tokensAsStrings().get(i).equals("of") && !sentence.tokensAsStrings().get(i).equals("for") && !((sentence.tokensAsStrings().get(i - 1).equals("of") || sentence.tokensAsStrings().get(i - 1).equals("for")) && posTags.get(i).equals("DT"))) {
-                    break;
+                List<String> prepositions = Arrays.asList("under", "via", "of", "for");
+                if (prepositions.contains(tokensAsStrings.get(i)) && sentence.dependencyParse().getParent(sentence.dependencyParse().getNodeByIndex(i + 1)).tag().startsWith("NN")) {
+                    if (tokensAsStrings.get(i).equals("for") && posTags.get(i + 1).equals("VBG")) {
+                        break;
+                    }
+                    endIndex = sentence.dependencyParse().getParent(sentence.dependencyParse().getNodeByIndex(i + 1)).index() - 1;
+                    continue;
                 }
+                if (tokensAsStrings.get(i).equals("in") && (nerTags.get(i + 1).equals("UI") || tokensAsStrings.get(i + 2).equalsIgnoreCase("list") || tokensAsStrings.get(i + 1).equalsIgnoreCase("CoMET"))) {
+                    endIndex = i + 2;
+                    continue;
+                }
+                break;
             }
         }
         if (endIndex == 0) {
             endIndex = nerTags.size() - 1;
         }
-        if (posTags.get(endIndex).equals(",")) {
+        if (posTags.get(endIndex).equals(",") || posTags.get(endIndex).equals("HYPH")) {
             endIndex -= 1;
         }
         int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex + 1).beginPosition();
