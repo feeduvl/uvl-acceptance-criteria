@@ -33,6 +33,9 @@ public class UserStory {
         String shortenedUserStoryString = userStoryString.substring(indexAsA);
         int listOrNoteAfterStartOfUserStory = indexOfListOrNote(shortenedUserStoryString);
         shortenedUserStoryString = shortenedUserStoryString.substring(0, listOrNoteAfterStartOfUserStory);
+        if (listOrNoteAfterStartOfUserStory < userStoryString.length()) {
+            shortenedUserStoryString += "…";
+        }
         int indexIWant = shortenedUserStoryString.toUpperCase().indexOf("I WANT", 0);
         if (indexIWant == -1) {
             throw new NoUserStoryException("A goal could not be found. Please make sure the goal of the user story is declared after the role using the syntax \"I want [goal]\".");

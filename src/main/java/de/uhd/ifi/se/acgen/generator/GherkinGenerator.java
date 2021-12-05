@@ -277,7 +277,7 @@ public class GherkinGenerator implements Generator {
             }
             if (!nerTags.get(i).equals("UI") && !posTags.get(i).startsWith("NN") && !posTags.get(i).equals(",") && !posTags.get(i).equals("HYPH")) {
                 endIndex = i - 1;
-                List<String> prepositions = Arrays.asList("under", "via", "of", "for");
+                List<String> prepositions = Arrays.asList("under", "of", "for");
                 if (prepositions.contains(tokensAsStrings.get(i)) && sentence.dependencyParse().getParent(sentence.dependencyParse().getNodeByIndex(i + 1)).tag().startsWith("NN")) {
                     if (tokensAsStrings.get(i).equals("for") && posTags.get(i + 1).equals("VBG")) {
                         break;
