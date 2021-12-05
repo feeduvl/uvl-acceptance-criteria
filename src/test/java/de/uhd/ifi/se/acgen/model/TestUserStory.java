@@ -136,7 +136,7 @@ public class TestUserStory {
         try {
             UserStory userStory = new UserStory(userStoryString);
             assertTrue(userStory.wasCutAtListOrNote());
-            assertTrue(userStory.getGoal().endsWith("to"));
+            assertTrue(userStory.getGoal().endsWith("to…"));
             assertFalse(userStory.getGoal().contains("* contain"));
             assertFalse(userStory.getGoal().contains("and see what happens"));
         } catch (NoUserStoryException e) {
@@ -153,7 +153,7 @@ public class TestUserStory {
         try {
             UserStory userStory = new UserStory(userStoryString);
             assertTrue(userStory.wasCutAtListOrNote());
-            assertTrue(userStory.getGoal().endsWith("to"));
+            assertTrue(userStory.getGoal().endsWith("to…"));
             assertFalse(userStory.getGoal().contains("* contain"));
             assertFalse(userStory.getGoal().contains("and see what happens"));
         } catch (NoUserStoryException e) {
@@ -171,7 +171,7 @@ public class TestUserStory {
                 "This is another sentence, also not being part of the user story.";
         try {
             UserStory userStory = new UserStory(userStoryString);
-            assertTrue(userStory.getGoal().endsWith("note"));
+            assertTrue(userStory.getGoal().endsWith("note…"));
             assertFalse(userStory.containsReason());
             assertTrue(userStory.wasCutAtListOrNote());
         } catch (NoUserStoryException e) {

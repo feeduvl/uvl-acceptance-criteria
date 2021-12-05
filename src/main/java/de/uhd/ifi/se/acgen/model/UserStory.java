@@ -62,6 +62,8 @@ public class UserStory {
                     }
                 }
                 return true;
+            } else if (userStoryString.charAt(indexOfPeriod + 1) == '…') {
+                return true;
             }
             return false;
         } catch (StringIndexOutOfBoundsException e) {
