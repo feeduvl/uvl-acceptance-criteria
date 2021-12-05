@@ -54,7 +54,7 @@ public class UserStory {
 
     private boolean isSentenceEnding(String userStoryString, int indexOfPeriod) {
         try {
-            List<String> abbreviations = Arrays.asList("e.g.", "etc.", "approx.", "i.e.", "cf.", "encl.", "p.a.");
+            List<String> abbreviations = Arrays.asList("e.g.", "etc.", "approx.", "i.e.", "cf.", "encl.", "p.a.", "Dr.", "Prof.");
             if (Character.isWhitespace(userStoryString.charAt(indexOfPeriod + 1))) {
                 for (String abbreviation : abbreviations) {
                     if (userStoryString.substring(0, indexOfPeriod + 1).endsWith(abbreviation)) {
