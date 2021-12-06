@@ -34,7 +34,7 @@ public class UserStory {
         int listOrNoteAfterStartOfUserStory = indexOfListOrNote(shortenedUserStoryString);
         shortenedUserStoryString = shortenedUserStoryString.substring(0, listOrNoteAfterStartOfUserStory);
         if (listOrNoteAfterStartOfUserStory < userStoryString.length()) {
-            shortenedUserStoryString += "…";
+            shortenedUserStoryString += " […]";
         }
         int indexIWant = shortenedUserStoryString.toUpperCase().indexOf("I WANT", 0);
         if (indexIWant == -1) {
@@ -43,12 +43,13 @@ public class UserStory {
         role = shortenedUserStoryString.substring(0, indexIWant).replaceAll("\\*", "").replaceAll("\\s+", " ");
         int indexSoThat = shortenedUserStoryString.toUpperCase().indexOf("SO THAT", indexIWant);
         wasCutAtListOrNote = false;
-        if (indexSoThat == -1) {
-            goal = shortenedUserStoryString.substring(indexIWant, findSentencePeriodOrEndOfString(shortenedUserStoryString, indexIWant)).replaceAll("\\*", "").replaceAll("\\s+", " ");
+        int indexSentencePeriod = findSentencePeriodOrEndOfString(shortenedUserStoryString, indexIWant);
+        if (indexSoThat == -1 || indexSoThat > indexSentencePeriod) {
+            goal = shortenedUserStoryString.substring(indexIWant, indexSentencePeriod).replaceAll("\\*", "").replaceAll("\\s+", " ");
             reason = "";
         } else {
             goal = shortenedUserStoryString.substring(indexIWant, indexSoThat).replaceAll("\\*", "").replaceAll("\\s+", " ");
-            reason = shortenedUserStoryString.substring(indexSoThat, findSentencePeriodOrEndOfString(shortenedUserStoryString, indexSoThat)).replaceAll("\\*", "").replaceAll("\\s+", " ");
+            reason = shortenedUserStoryString.substring(indexSoThat, indexSentencePeriod).replaceAll("\\*", "").replaceAll("\\s+", " ");
         }
     }
 
@@ -61,8 +62,6 @@ public class UserStory {
                         return false;
                     }
                 }
-                return true;
-            } else if (userStoryString.charAt(indexOfPeriod + 1) == '…') {
                 return true;
             }
             return false;

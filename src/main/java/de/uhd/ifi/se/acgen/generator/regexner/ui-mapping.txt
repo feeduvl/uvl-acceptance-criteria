@@ -1,2 +1,3 @@
-( [{ word:"displayed" }]? /in|of|via/ [ { word:"the" } ] ( [ { word:/[A-Za-z]+/ } ]{0,2} /[Vv]iew|[Cc]ockpit|[Ff]rontend|[Oo]verview|[Dd]etails|[Ss]ection/ | [ /[A-Z]{1,3}C/ ] ) )	UI
-( [{ word:"displayed" }]? /in|of|via/ [ { word:"the" } ] ( ( [ { word:/[A-Za-z]+/ } ]{1,3} [ { tag:/,|HYPH/ } ] ){0,2} [ { word:/[A-Za-z]+/ } ]{0,3} /[Vv]iew/ ) )	UI
+( [{ word:"displayed" }]? /in|of|via|for|from|throughout|wants|WANTs/ [ { word:"the" } ] ( [ { word:/[A-Za-z]+/ } ]{0,2} /[Vv]iew|[Cc]ockpit|[Ff]rontend|[Oo]verview|[Dd]etails|[Ss]ection/ | [ /[A-Z]{1,3}C/ ] ) )	UI
+( [{ word:"displayed" }]? /in|of|via|for|from|throughout|wants|WANTs/ [ { word:"the" } ] ( ( [ { word:/[A-Za-z]+/ } ]{1,3} [ { tag:/,|HYPH/ } ] ){0,2} [ { word:/[A-Za-z]+/ } ]{0,3} /[Vv]iew/ ) )	UI
+( [{ word:"displayed" }]? /in|of|via|for|from|throughout|wants|WANTs/ [ { word:"the" } ] ( [ { tag:"``" } ] [ { word:/[A-Za-z,-]+/ } ]{0,6} [ { tag:"''" } ] /[Vv]iew/ ) )	UI

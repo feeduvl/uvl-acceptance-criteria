@@ -224,6 +224,7 @@ public class GherkinGenerator implements Generator {
                 IndexedWord expectedWants = userStorySentence.dependencyParse().getNodeByIndex(word.index() + 2);
                 if (expectedUser.word().equalsIgnoreCase("user") && expectedUser.tag().equals("NN") && expectedWants.word().equalsIgnoreCase("wants") && expectedWants.tag().equals("VBZ")) {
                     indexTheUserWants = Math.max(indexTheUserWants, word.index());
+                    break;
                 }
             }
         }
@@ -287,6 +288,22 @@ public class GherkinGenerator implements Generator {
                 }
                 if (tokensAsStrings.get(i).equals("in") && (nerTags.get(i + 1).equals("UI") || tokensAsStrings.get(i + 2).equalsIgnoreCase("list") || tokensAsStrings.get(i + 1).equalsIgnoreCase("CoMET"))) {
                     endIndex = i + 2;
+                    continue;
+                }
+                if (posTags.get(i).equals("``") && posTags.subList(i + 1, posTags.size()).contains("''")) {
+                    endIndex = i + 2 + posTags.subList(i + 1, posTags.size()).indexOf("''");
+                    continue;
+                }
+                if (posTags.get(i).equals("-LRB-") && posTags.subList(i + 1, posTags.size()).contains("-RRB-")) {
+                    endIndex = i + 2 + posTags.subList(i + 1, posTags.size()).indexOf("-RRB-");
+                    continue;
+                }
+                if (tokensAsStrings.get(i).equals("\"") && tokensAsStrings.subList(i + 1, tokensAsStrings.size()).contains("\"")) {
+                    endIndex = i + 2 + tokensAsStrings.subList(i + 1, tokensAsStrings.size()).indexOf("\"");
+                    continue;
+                }
+                if (tokensAsStrings.get(i).equals(">") && (posTags.get(i - 1).equals("HYPH") || tokensAsStrings.get(i - 1).equals("-"))) {
+                    endIndex = i + 1;
                     continue;
                 }
                 break;
