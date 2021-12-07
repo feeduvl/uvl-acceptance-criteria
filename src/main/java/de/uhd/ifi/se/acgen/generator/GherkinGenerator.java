@@ -274,6 +274,25 @@ public class GherkinGenerator implements Generator {
         if (beginIndex == Integer.MAX_VALUE) {
             return acceptanceCriteria;
         }
+        int endIndex = getEndIndexOfUI(beginIndex, sentence);
+        if (endIndex == 0 || endIndex == nerTags.size()) {
+            endIndex = nerTags.size() - 1;
+        }
+        if (posTags.get(endIndex).equals(",") || posTags.get(endIndex).equals("HYPH")) {
+            endIndex -= 1;
+        }
+        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex + 1).beginPosition();
+        beginPosition = userStoryString.indexOf("the", beginPosition);
+        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex + 1).endPosition();
+        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.UI));
+
+        return acceptanceCriteria;
+    }
+
+    private int getEndIndexOfUI(int beginIndex, CoreSentence sentence) {
+        List<String> nerTags = sentence.nerTags();
+        List<String> posTags = sentence.posTags();
+        List<String> tokensAsStrings = sentence.tokensAsStrings();
         int endIndex = 0;
         for (int i = beginIndex; i < nerTags.size(); i++) {
             if (i < endIndex) {
@@ -302,18 +321,7 @@ public class GherkinGenerator implements Generator {
                 }
             }
         }
-        if (endIndex == 0 || endIndex == nerTags.size()) {
-            endIndex = nerTags.size() - 1;
-        }
-        if (posTags.get(endIndex).equals(",") || posTags.get(endIndex).equals("HYPH")) {
-            endIndex -= 1;
-        }
-        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex + 1).beginPosition();
-        beginPosition = userStoryString.indexOf("the", beginPosition);
-        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex + 1).endPosition();
-        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.UI));
-
-        return acceptanceCriteria;
+        return endIndex;
     }
 
     private List<AcceptanceCriterion> extractConditionalInformation(CoreSentence sentence, String userStoryString) {
