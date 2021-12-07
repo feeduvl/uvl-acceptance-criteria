@@ -330,13 +330,14 @@ public class GherkinGenerator implements Generator {
         for (int i = 1; i < tokensAsStrings.size(); i++) {
             if (tokensAsStrings.get(i - 1).equalsIgnoreCase("so") && tokensAsStrings.get(i).equalsIgnoreCase("that")) {
                 indexSoThat = i;
+                break;
             }
         }
 
         List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever");
 
         int firstConditionalStarterIndex = Integer.MAX_VALUE;
-        for (int i = 1; i < indexSoThat; i++) {
+        for (int i = 1; i < indexSoThat + 1; i++) {
             IndexedWord word = sentence.dependencyParse().getNodeByIndex(i);
             if (conditionalStarterStrings.contains(word.word().toLowerCase()) ) {
                 firstConditionalStarterIndex = Math.min(firstConditionalStarterIndex, word.index());
