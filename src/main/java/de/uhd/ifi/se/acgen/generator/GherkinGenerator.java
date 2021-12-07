@@ -287,29 +287,19 @@ public class GherkinGenerator implements Generator {
                         break;
                     }
                     endIndex = sentence.dependencyParse().getParent(sentence.dependencyParse().getNodeByIndex(i + 1)).index() - 1;
-                    continue;
-                }
-                if (tokensAsStrings.get(i).equals("in") && (nerTags.get(i + 1).equals("UI") || tokensAsStrings.get(i + 2).equalsIgnoreCase("list") || tokensAsStrings.get(i + 1).equalsIgnoreCase("CoMET"))) {
+                } else if (tokensAsStrings.get(i).equals("in") && (nerTags.get(i + 1).equals("UI") || tokensAsStrings.get(i + 2).equalsIgnoreCase("list") || tokensAsStrings.get(i + 1).equalsIgnoreCase("CoMET"))) {
                     endIndex = i + 2;
-                    continue;
-                }
-                if (posTags.get(i).equals("``") && posTags.subList(i + 1, posTags.size()).contains("''")) {
+                } else if (posTags.get(i).equals("``") && posTags.subList(i + 1, posTags.size()).contains("''")) {
                     endIndex = i + 2 + posTags.subList(i + 1, posTags.size()).indexOf("''");
-                    continue;
-                }
-                if (posTags.get(i).equals("-LRB-") && posTags.subList(i + 1, posTags.size()).contains("-RRB-")) {
+                } else if (posTags.get(i).equals("-LRB-") && posTags.subList(i + 1, posTags.size()).contains("-RRB-")) {
                     endIndex = i + 2 + posTags.subList(i + 1, posTags.size()).indexOf("-RRB-");
-                    continue;
-                }
-                if (tokensAsStrings.get(i).equals("\"") && tokensAsStrings.subList(i + 1, tokensAsStrings.size()).contains("\"")) {
+                } else if (tokensAsStrings.get(i).equals("\"") && tokensAsStrings.subList(i + 1, tokensAsStrings.size()).contains("\"")) {
                     endIndex = i + 2 + tokensAsStrings.subList(i + 1, tokensAsStrings.size()).indexOf("\"");
-                    continue;
-                }
-                if (tokensAsStrings.get(i).equals(">") && (posTags.get(i - 1).equals("HYPH") || tokensAsStrings.get(i - 1).equals("-"))) {
+                } else if (tokensAsStrings.get(i).equals(">") && (posTags.get(i - 1).equals("HYPH") || tokensAsStrings.get(i - 1).equals("-"))) {
                     endIndex = i + 1;
-                    continue;
+                } else {
+                    break;
                 }
-                break;
             }
         }
         if (endIndex == 0 || endIndex == nerTags.size()) {
