@@ -359,62 +359,70 @@ public class GherkinGenerator implements Generator {
         if (firstConditionalStarterIndexAfterSoThat == indexSoThat + 2) {
             conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndexAfterSoThat));
         }
+
         for (IndexedWord conditionalStarterWord : conditionalStarterWords) {
-            IndexedWord root = getRootOfCondition(sentence, conditionalStarterWord);
-            List<IndexedWord> conditionWords = new ArrayList<IndexedWord>();
-            conditionWords.addAll(sentence.dependencyParse().getSubgraphVertices(root));
-            if (conditionWords.size() < 2) {
-                continue;
-            }
-            conditionWords.sort((word, otherWord) -> word.index() - otherWord.index());
-            conditionWords.removeIf(word -> word.index() < conditionalStarterWord.index());
-            int beginIndex = conditionalStarterWord.index() + 1;
-            int endIndex = conditionWords.get(conditionWords.size() - 1).index();
-            if (conditionalStarterWord.index() < indexSoThat) {
-                endIndex = Math.min(endIndex, indexSoThat - 1);
-            }
-            int inParentheses = 0;
-            for (IndexedWord conditionWord : conditionWords) {
-                if (conditionWord.tag().equals("-LRB-")) {
-                    inParentheses += 1;
-                    continue;
-                }
-                if (conditionWord.tag().equals("-RRB-")) {
-                    inParentheses -= 1;
-                    continue;
-                }
-                if (conditionWord.word().equals(",") && inParentheses == 0) {
-                    endIndex = Math.min(endIndex, conditionWord.index() - 1);
-                    break;
-                }
-            }
-            if (conditionalStarterWord.index() > indexSoThat && endIndex >= wordsInSentence.size() - 1) {
-                continue;
-            }
-            int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
-            int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
-            if (conditionalStarterWord.index() > indexSoThat) {
-                beginIndex = endIndex + 1;
-                endIndex = wordsInSentence.size();
-                if (sentence.dependencyParse().getNodeByIndex(beginIndex).word().equals(",")) {
-                    beginIndex += 1;
-                }
-                if (sentence.dependencyParse().getNodeByIndex(endIndex).tag().equals(".")) {
-                    endIndex -= 1;
-                }
-                if (beginIndex <= endIndex) {
-                    beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
-                    endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-                    acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT));
-                }
-            }
+            acceptanceCriteria.addAll(extractConditionalInformationFromConditionalStarterWord(sentence, userStoryString, conditionalStarterWord, indexSoThat));
         }
 
         if (acceptanceCriteria.isEmpty() && userStoryString.toLowerCase().contains("to click")) {
             acceptanceCriteria.addAll(extractConditionalInformationFromInteraction(userStoryString));
         }
 
+        return acceptanceCriteria;
+    }
+
+    private List<AcceptanceCriterion> extractConditionalInformationFromConditionalStarterWord(CoreSentence sentence, String userStoryString, IndexedWord conditionalStarterWord, int indexSoThat) {
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
+        IndexedWord root = getRootOfCondition(sentence, conditionalStarterWord);
+        List<IndexedWord> conditionWords = new ArrayList<IndexedWord>();
+        conditionWords.addAll(sentence.dependencyParse().getSubgraphVertices(root));
+        if (conditionWords.size() < 2) {
+            return acceptanceCriteria;
+        }
+        conditionWords.sort((word, otherWord) -> word.index() - otherWord.index());
+        conditionWords.removeIf(word -> word.index() < conditionalStarterWord.index());
+        int beginIndex = conditionalStarterWord.index() + 1;
+        int endIndex = conditionWords.get(conditionWords.size() - 1).index();
+        if (conditionalStarterWord.index() < indexSoThat) {
+            endIndex = Math.min(endIndex, indexSoThat - 1);
+        }
+        int inParentheses = 0;
+        for (IndexedWord conditionWord : conditionWords) {
+            if (conditionWord.tag().equals("-LRB-")) {
+                inParentheses += 1;
+                continue;
+            }
+            if (conditionWord.tag().equals("-RRB-")) {
+                inParentheses -= 1;
+                continue;
+            }
+            if (conditionWord.word().equals(",") && inParentheses == 0) {
+                endIndex = Math.min(endIndex, conditionWord.index() - 1);
+                break;
+            }
+        }
+        int wordsInSentenceCount = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot()).size();
+        if (conditionalStarterWord.index() > indexSoThat && endIndex >= wordsInSentenceCount - 1) {
+            return acceptanceCriteria;
+        }
+        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
+        if (conditionalStarterWord.index() > indexSoThat) {
+            beginIndex = endIndex + 1;
+            endIndex = wordsInSentenceCount;
+            if (sentence.dependencyParse().getNodeByIndex(beginIndex).word().equals(",")) {
+                beginIndex += 1;
+            }
+            if (sentence.dependencyParse().getNodeByIndex(endIndex).tag().equals(".")) {
+                endIndex -= 1;
+            }
+            if (beginIndex <= endIndex) {
+                beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+                endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+                acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT));
+            }
+        }
         return acceptanceCriteria;
     }
 
