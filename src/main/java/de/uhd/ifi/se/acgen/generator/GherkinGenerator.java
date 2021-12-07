@@ -413,27 +413,31 @@ public class GherkinGenerator implements Generator {
             }
         }
 
-        if (acceptanceCriteria.isEmpty()) {
-            if (userStoryString.toLowerCase().contains("to click")) {
-                int beginPosition = userStoryString.toLowerCase().indexOf("to click") + 9;
-                int endPositionTo = userStoryString.toLowerCase().indexOf(" to ", beginPosition);
-                int endPositionAnd = userStoryString.toLowerCase().indexOf(" and ", beginPosition);
-                int endPosition = -1;
-                if (endPositionTo == -1 ^ endPositionAnd == -1) {
-                    endPosition = Math.max(endPositionTo, endPositionAnd);
-                } else {
-                    endPosition = Math.min(endPositionTo, endPositionAnd);
-                }
-                if (endPosition != -1) {
-                    String acceptanceCriterionString = userStoryString.substring(beginPosition, endPosition);
-                    while (acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ',' || acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ' ') {
-                        acceptanceCriterionString = acceptanceCriterionString.substring(0, acceptanceCriterionString.length() - 1);
-                    }
-                    acceptanceCriteria.add(new AcceptanceCriterion(acceptanceCriterionString, AcceptanceCriterionType.CAUSE_INTERACTION));
-                }
-            }
+        if (acceptanceCriteria.isEmpty() && userStoryString.toLowerCase().contains("to click")) {
+            acceptanceCriteria.addAll(extractConditionalInformationFromInteraction(userStoryString));
         }
 
+        return acceptanceCriteria;
+    }
+
+    private List<AcceptanceCriterion> extractConditionalInformationFromInteraction(String userStoryString) {
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
+        int beginPosition = userStoryString.toLowerCase().indexOf("to click") + 9;
+        int endPositionTo = userStoryString.toLowerCase().indexOf(" to ", beginPosition);
+        int endPositionAnd = userStoryString.toLowerCase().indexOf(" and ", beginPosition);
+        int endPosition = -1;
+        if (endPositionTo == -1 ^ endPositionAnd == -1) {
+            endPosition = Math.max(endPositionTo, endPositionAnd);
+        } else {
+            endPosition = Math.min(endPositionTo, endPositionAnd);
+        }
+        if (endPosition != -1) {
+            String acceptanceCriterionString = userStoryString.substring(beginPosition, endPosition);
+            while (acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ',' || acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ' ') {
+                acceptanceCriterionString = acceptanceCriterionString.substring(0, acceptanceCriterionString.length() - 1);
+            }
+            acceptanceCriteria.add(new AcceptanceCriterion(acceptanceCriterionString, AcceptanceCriterionType.CAUSE_INTERACTION));
+        }
         return acceptanceCriteria;
     }
 
