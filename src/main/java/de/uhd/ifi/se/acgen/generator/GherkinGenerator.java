@@ -400,11 +400,11 @@ public class GherkinGenerator implements Generator {
         return acceptanceCriteria;
     }
 
-    private List<AcceptanceCriterion> extractEffectInformationFromConditionalStarterWordInReason(CoreSentence sentence, String userStoryString, int endIndex) {
+    private List<AcceptanceCriterion> extractEffectInformationFromConditionalStarterWordInReason(CoreSentence sentence, String userStoryString, int endIndexOfCause) {
         List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
         int wordsInSentenceCount = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot()).size();
-        int beginIndex = endIndex + 1;
-        endIndex = wordsInSentenceCount;
+        int beginIndex = endIndexOfCause + 1;
+        int endIndex = wordsInSentenceCount;
         if (sentence.dependencyParse().getNodeByIndex(beginIndex).word().equals(",")) {
             beginIndex += 1;
         }
