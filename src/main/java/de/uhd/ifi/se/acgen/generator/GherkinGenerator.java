@@ -42,6 +42,7 @@ public class GherkinGenerator implements Generator {
 
         acceptanceCriteria.addAll(extractRoleInformation(userStorySentence, userStoryString));
         acceptanceCriteria.addAll(extractUIInformation(userStorySentence, userStoryString));
+        acceptanceCriteria.addAll(extractConditionalInformation(userStorySentence, userStoryString));
 
         return acceptanceCriteria;
     }
@@ -206,8 +207,8 @@ public class GherkinGenerator implements Generator {
         return verb + "s";
     }
 
-    private Set<String> extractRoleInformation(CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
-        Set<String> acceptanceCriteria = new HashSet<String>();
+    private List<String> extractRoleInformation(CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
+        List<String> acceptanceCriteria = new ArrayList<String>();
 
         Set<IndexedWord> wordsInUserStorySentence = userStorySentence.dependencyParse().getSubgraphVertices(userStorySentence.dependencyParse().getFirstRoot());
         
@@ -253,8 +254,8 @@ public class GherkinGenerator implements Generator {
         return null;
     }
 
-    private Set<String> extractUIInformation(CoreSentence sentence, String userStoryString) {
-        Set<String> acceptanceCriteria = new HashSet<String>();
+    private List<String> extractUIInformation(CoreSentence sentence, String userStoryString) {
+        List<String> acceptanceCriteria = new ArrayList<String>();
         List<String> nerTags = sentence.nerTags();
         List<String> posTags = sentence.posTags();
         List<String> tokensAsStrings = sentence.tokensAsStrings();
@@ -279,7 +280,7 @@ public class GherkinGenerator implements Generator {
             if (!nerTags.get(i).equals("UI") && !posTags.get(i).startsWith("NN") && !posTags.get(i).equals(",") && !posTags.get(i).equals("HYPH")) {
                 endIndex = i - 1;
                 List<String> prepositions = Arrays.asList("under", "of", "for");
-                if (prepositions.contains(tokensAsStrings.get(i)) && sentence.dependencyParse().getParent(sentence.dependencyParse().getNodeByIndex(i + 1)).tag().startsWith("NN")) {
+                if (prepositions.contains(tokensAsStrings.get(i).toLowerCase()) && sentence.dependencyParse().getParent(sentence.dependencyParse().getNodeByIndex(i + 1)).tag().startsWith("NN")) {
                     if (tokensAsStrings.get(i).equals("for") && posTags.get(i + 1).equals("VBG")) {
                         break;
                     }
@@ -309,7 +310,7 @@ public class GherkinGenerator implements Generator {
                 break;
             }
         }
-        if (endIndex == 0) {
+        if (endIndex == 0 || endIndex == nerTags.size()) {
             endIndex = nerTags.size() - 1;
         }
         if (posTags.get(endIndex).equals(",") || posTags.get(endIndex).equals("HYPH")) {
@@ -321,6 +322,125 @@ public class GherkinGenerator implements Generator {
         acceptanceCriteria.add("GIVEN the active user interface is " + userStoryString.substring(beginPosition, endPosition));
 
         return acceptanceCriteria;
+    }
+
+    private List<String> extractConditionalInformation(CoreSentence sentence, String userStoryString) {
+        List<String> acceptanceCriteria = new ArrayList<String>();
+        List<String> tokensAsStrings = sentence.tokensAsStrings();
+        int indexSoThat = tokensAsStrings.size();
+        for (int i = 1; i < tokensAsStrings.size(); i++) {
+            if (tokensAsStrings.get(i - 1).equalsIgnoreCase("so") && tokensAsStrings.get(i).equalsIgnoreCase("that")) {
+                indexSoThat = i;
+            }
+        }
+
+        List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever");
+        Set<IndexedWord> wordsInSentence = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot());
+        Set<IndexedWord> allConditionalStarterWordsSet = new HashSet<IndexedWord>();
+        for (IndexedWord word : wordsInSentence) {
+            if (conditionalStarterStrings.contains(word.word().toLowerCase())) {
+                allConditionalStarterWordsSet.add(word);
+            }
+        }
+        int firstConditionalStarterIndexBeforeSoThat = Integer.MAX_VALUE;
+        int firstConditionalStarterIndexAfterSoThat = Integer.MAX_VALUE;
+        for (IndexedWord conditionalStarterWord : allConditionalStarterWordsSet) {
+            if (conditionalStarterWord.index() < indexSoThat) {
+                firstConditionalStarterIndexBeforeSoThat = Math.min(firstConditionalStarterIndexBeforeSoThat, conditionalStarterWord.index());
+            } else {
+                firstConditionalStarterIndexAfterSoThat = Math.min(firstConditionalStarterIndexAfterSoThat, conditionalStarterWord.index());
+            }
+        }
+
+        List<IndexedWord> conditionalStarterWords = new ArrayList<IndexedWord>();
+        if (firstConditionalStarterIndexBeforeSoThat != Integer.MAX_VALUE) {
+            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndexBeforeSoThat));
+        }
+        if (firstConditionalStarterIndexAfterSoThat == indexSoThat + 2) {
+            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndexAfterSoThat));
+        }
+        for (IndexedWord conditionalStarterWord : conditionalStarterWords) {
+            IndexedWord root = getRootOfCondition(sentence, conditionalStarterWord);
+            List<IndexedWord> conditionWords = new ArrayList<IndexedWord>();
+            conditionWords.addAll(sentence.dependencyParse().getSubgraphVertices(root));
+            if (conditionWords.size() < 2) {
+                continue;
+            }
+            conditionWords.sort((word, otherWord) -> word.index() - otherWord.index());
+            conditionWords.removeIf(word -> word.index() < conditionalStarterWord.index());
+            int beginIndex = conditionalStarterWord.index() + 1;
+            int endIndex = conditionWords.get(conditionWords.size() - 1).index();
+            if (conditionalStarterWord.index() < indexSoThat) {
+                endIndex = Math.min(endIndex, indexSoThat - 1);
+            }
+            int inParentheses = 0;
+            for (IndexedWord conditionWord : conditionWords) {
+                if (conditionWord.tag().equals("-LRB-")) {
+                    inParentheses += 1;
+                    continue;
+                }
+                if (conditionWord.tag().equals("-RRB-")) {
+                    inParentheses -= 1;
+                    continue;
+                }
+                if (conditionWord.word().equals(",") && inParentheses == 0) {
+                    endIndex = Math.min(endIndex, conditionWord.index() - 1);
+                    break;
+                }
+            }
+            if (conditionalStarterWord.index() > indexSoThat && endIndex >= wordsInSentence.size() - 1) {
+                continue;
+            }
+            int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+            int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+            acceptanceCriteria.add("WHEN " + userStoryString.substring(beginPosition, endPosition));
+            if (conditionalStarterWord.index() > indexSoThat) {
+                beginIndex = endIndex + 1;
+                endIndex = wordsInSentence.size();
+                if (sentence.dependencyParse().getNodeByIndex(beginIndex).word().equals(",")) {
+                    beginIndex += 1;
+                }
+                if (sentence.dependencyParse().getNodeByIndex(endIndex).tag().equals(".")) {
+                    endIndex -= 1;
+                }
+                if (beginIndex <= endIndex) {
+                    beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+                    endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+                    acceptanceCriteria.add("THEN " + userStoryString.substring(beginPosition, endPosition));
+                }
+            }
+        }
+
+        if (acceptanceCriteria.isEmpty()) {
+            if (userStoryString.toLowerCase().contains("to click")) {
+                int beginPosition = userStoryString.toLowerCase().indexOf("to click") + 9;
+                int endPositionTo = userStoryString.toLowerCase().indexOf(" to ", beginPosition);
+                int endPositionAnd = userStoryString.toLowerCase().indexOf(" and ", beginPosition);
+                int endPosition = -1;
+                if (endPositionTo == -1 ^ endPositionAnd == -1) {
+                    endPosition = Math.max(endPositionTo, endPositionAnd);
+                } else {
+                    endPosition = Math.min(endPositionTo, endPositionAnd);
+                }
+                if (endPosition != -1) {
+                    String acceptanceCriterion = userStoryString.substring(beginPosition, endPosition);
+                    while (acceptanceCriterion.charAt(acceptanceCriterion.length() - 1) == ',' || acceptanceCriterion.charAt(acceptanceCriterion.length() - 1) == ' ') {
+                        acceptanceCriterion = acceptanceCriterion.substring(0, acceptanceCriterion.length() - 1);
+                    }
+                    acceptanceCriteria.add("WHEN the user clicks " + acceptanceCriterion);
+                }
+            }
+        }
+
+        return acceptanceCriteria;
+    }
+
+    private IndexedWord getRootOfCondition(CoreSentence sentence, IndexedWord conditionalStarterWord) {
+        IndexedWord parent = sentence.dependencyParse().getParent(conditionalStarterWord);
+        if (parent.tag().startsWith("VB") && parent.index() > conditionalStarterWord.index()) {
+            return parent;
+        }
+        return conditionalStarterWord;
     }
 
 }
