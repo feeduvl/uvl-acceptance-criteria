@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -335,43 +334,34 @@ public class GherkinGenerator implements Generator {
         }
 
         List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever");
-        Set<IndexedWord> wordsInSentence = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot());
-        Set<IndexedWord> allConditionalStarterWordsSet = new HashSet<IndexedWord>();
-        for (IndexedWord word : wordsInSentence) {
-            if (conditionalStarterStrings.contains(word.word().toLowerCase())) {
-                allConditionalStarterWordsSet.add(word);
-            }
-        }
-        int firstConditionalStarterIndexBeforeSoThat = Integer.MAX_VALUE;
-        int firstConditionalStarterIndexAfterSoThat = Integer.MAX_VALUE;
-        for (IndexedWord conditionalStarterWord : allConditionalStarterWordsSet) {
-            if (conditionalStarterWord.index() < indexSoThat) {
-                firstConditionalStarterIndexBeforeSoThat = Math.min(firstConditionalStarterIndexBeforeSoThat, conditionalStarterWord.index());
-            } else {
-                firstConditionalStarterIndexAfterSoThat = Math.min(firstConditionalStarterIndexAfterSoThat, conditionalStarterWord.index());
+
+        int firstConditionalStarterIndex = Integer.MAX_VALUE;
+        for (int i = 1; i < indexSoThat; i++) {
+            IndexedWord word = sentence.dependencyParse().getNodeByIndex(i);
+            if (conditionalStarterStrings.contains(word.word().toLowerCase()) ) {
+                firstConditionalStarterIndex = Math.min(firstConditionalStarterIndex, word.index());
+                break;
             }
         }
 
         List<IndexedWord> conditionalStarterWords = new ArrayList<IndexedWord>();
-        if (firstConditionalStarterIndexBeforeSoThat != Integer.MAX_VALUE) {
-            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndexBeforeSoThat));
+        if (firstConditionalStarterIndex != Integer.MAX_VALUE) {
+            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndex));
         }
-        if (firstConditionalStarterIndexAfterSoThat == indexSoThat + 2) {
-            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndexAfterSoThat));
+        if (indexSoThat + 2 < tokensAsStrings.size() && conditionalStarterStrings.contains(sentence.dependencyParse().getNodeByIndex(indexSoThat + 2).word().toLowerCase())) {
+            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(indexSoThat + 2));
         }
 
         for (IndexedWord conditionalStarterWord : conditionalStarterWords) {
-            acceptanceCriteria.addAll(extractConditionalInformationFromConditionalStarterWord(sentence, userStoryString, conditionalStarterWord, indexSoThat));
+            acceptanceCriteria.addAll(extractCauseInformationFromConditionalStarterWord(sentence, userStoryString, conditionalStarterWord, indexSoThat));
         }
 
-        if (acceptanceCriteria.isEmpty() && userStoryString.toLowerCase().contains("to click")) {
-            acceptanceCriteria.addAll(extractConditionalInformationFromInteraction(userStoryString));
-        }
+        acceptanceCriteria.addAll(extractConditionalInformationFromInteraction(userStoryString));
 
         return acceptanceCriteria;
     }
 
-    private List<AcceptanceCriterion> extractConditionalInformationFromConditionalStarterWord(CoreSentence sentence, String userStoryString, IndexedWord conditionalStarterWord, int indexSoThat) {
+    private List<AcceptanceCriterion> extractCauseInformationFromConditionalStarterWord(CoreSentence sentence, String userStoryString, IndexedWord conditionalStarterWord, int indexSoThat) {
         List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
         IndexedWord root = getRootOfCondition(sentence, conditionalStarterWord);
         List<IndexedWord> conditionWords = new ArrayList<IndexedWord>();
@@ -390,13 +380,9 @@ public class GherkinGenerator implements Generator {
         for (IndexedWord conditionWord : conditionWords) {
             if (conditionWord.tag().equals("-LRB-")) {
                 inParentheses += 1;
-                continue;
-            }
-            if (conditionWord.tag().equals("-RRB-")) {
+            } else if (conditionWord.tag().equals("-RRB-")) {
                 inParentheses -= 1;
-                continue;
-            }
-            if (conditionWord.word().equals(",") && inParentheses == 0) {
+            } else if (conditionWord.word().equals(",") && inParentheses == 0) {
                 endIndex = Math.min(endIndex, conditionWord.index() - 1);
                 break;
             }
@@ -409,25 +395,35 @@ public class GherkinGenerator implements Generator {
         int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
         acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
         if (conditionalStarterWord.index() > indexSoThat) {
-            beginIndex = endIndex + 1;
-            endIndex = wordsInSentenceCount;
-            if (sentence.dependencyParse().getNodeByIndex(beginIndex).word().equals(",")) {
-                beginIndex += 1;
-            }
-            if (sentence.dependencyParse().getNodeByIndex(endIndex).tag().equals(".")) {
-                endIndex -= 1;
-            }
-            if (beginIndex <= endIndex) {
-                beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
-                endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-                acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT));
-            }
+            acceptanceCriteria.addAll(extractEffectInformationFromConditionalStarterWordInReason(sentence, userStoryString, endIndex));
+        }
+        return acceptanceCriteria;
+    }
+
+    private List<AcceptanceCriterion> extractEffectInformationFromConditionalStarterWordInReason(CoreSentence sentence, String userStoryString, int endIndex) {
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
+        int wordsInSentenceCount = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot()).size();
+        int beginIndex = endIndex + 1;
+        endIndex = wordsInSentenceCount;
+        if (sentence.dependencyParse().getNodeByIndex(beginIndex).word().equals(",")) {
+            beginIndex += 1;
+        }
+        if (sentence.dependencyParse().getNodeByIndex(endIndex).tag().equals(".")) {
+            endIndex -= 1;
+        }
+        if (beginIndex <= endIndex) {
+            int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+            int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT));
         }
         return acceptanceCriteria;
     }
 
     private List<AcceptanceCriterion> extractConditionalInformationFromInteraction(String userStoryString) {
         List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
+        if (!userStoryString.toLowerCase().contains("to click")) {
+            return acceptanceCriteria;
+        }
         int beginPosition = userStoryString.toLowerCase().indexOf("to click") + 9;
         int endPositionTo = userStoryString.toLowerCase().indexOf(" to ", beginPosition);
         int endPositionAnd = userStoryString.toLowerCase().indexOf(" and ", beginPosition);
