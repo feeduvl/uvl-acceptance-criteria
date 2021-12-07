@@ -18,11 +18,11 @@ public class UserStory {
     String reason;
     boolean containsListOrNote;
     boolean wasCutAtListOrNote;
-    Map<String, List<String>> acceptanceCriteria;
+    Map<String, List<AcceptanceCriterion>> acceptanceCriteria;
 
     public UserStory(String userStoryString) throws NoUserStoryException {
         identifyParts(userStoryString.replaceAll("\\.{3,}", "…"));
-        acceptanceCriteria = new HashMap<String, List<String>>();
+        acceptanceCriteria = new HashMap<String, List<AcceptanceCriterion>>();
     };
 
     private void identifyParts(String userStoryString) throws NoUserStoryException {
@@ -120,7 +120,7 @@ public class UserStory {
         return wasCutAtListOrNote;
     }
 
-    public List<String> getAcceptanceCriteria(Generator generator, boolean debug) throws TokenNotFoundException {
+    public List<AcceptanceCriterion> getAcceptanceCriteria(Generator generator, boolean debug) throws TokenNotFoundException {
         String generatorName = generator.getClass().getName();
         assert(!generatorName.equals(""));
         if (!acceptanceCriteria.containsKey(generatorName)) {

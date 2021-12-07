@@ -8,6 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import de.uhd.ifi.se.acgen.generator.GherkinGenerator;
+import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
+import de.uhd.ifi.se.acgen.model.AcceptanceCriterionType;
 import de.uhd.ifi.se.acgen.model.UserStory;
 import de.uhd.ifi.se.acgen.model.UvlResponse;
 import spark.Request;
@@ -24,21 +26,21 @@ public class RunRest {
             String userStoryText = document.getAsJsonObject().get("text").getAsString();
             try {
                 UserStory userStory = new UserStory(userStoryText);
-                List<String> acceptanceCriteria = userStory.getAcceptanceCriteria(new GherkinGenerator(), debug);
-                for (String acceptanceCriterion : acceptanceCriteria) {
-                    response.addAC(acceptanceCriterion, userStoryNumber);
+                List<AcceptanceCriterion> acceptanceCriteria = userStory.getAcceptanceCriteria(new GherkinGenerator(), debug);
+                for (AcceptanceCriterion acceptanceCriterion : acceptanceCriteria) {
+                    response.addAcceptanceCriterion(acceptanceCriterion, userStoryNumber);
                 }
                 if (!userStory.containsReason()) {
                     infos += 1;
-                    response.addAC("INFO: A reason could not be found. If you wish to include a reason, please make sure the reason of the user story is declared after the role and the goal using the syntax “so that [reason]”.", userStoryNumber);
+                    response.addAcceptanceCriterion(new AcceptanceCriterion("A reason could not be found. If you wish to include a reason, please make sure the reason of the user story is declared after the role and the goal using the syntax “so that [reason]”.", AcceptanceCriterionType.INFO), userStoryNumber);
                 }
                 if (userStory.wasCutAtListOrNote()) {
                     warnings += 1;
-                    response.addAC("WARNING: The user story was cut at a bullet point list or a part of text starting with “\\\\”. Please refrain from using these syntaxes within a user story and make sure to end your user story with a sentence period.", userStoryNumber);
+                    response.addAcceptanceCriterion(new AcceptanceCriterion("The user story was cut at a bullet point list or a part of text starting with “\\\\”. Please refrain from using these syntaxes within a user story and make sure to end your user story with a sentence period.", AcceptanceCriterionType.WARNING), userStoryNumber);
                 }
             } catch (Exception e) {
                 errors += 1;
-                response.addAC("ERROR: " + e.getMessage(), userStoryNumber);
+                response.addAcceptanceCriterion(new AcceptanceCriterion(e.getMessage(), AcceptanceCriterionType.ERROR), userStoryNumber);
             }
         }
         response.addMetric("errorCount", errors);

@@ -11,6 +11,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import de.uhd.ifi.se.acgen.exception.TokenNotFoundException;
+import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
+import de.uhd.ifi.se.acgen.model.AcceptanceCriterionType;
 import de.uhd.ifi.se.acgen.model.UserStory;
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;
@@ -23,12 +25,12 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 
 public class GherkinGenerator implements Generator {
     
-    public List<String> generate(UserStory userStory, boolean debug) throws TokenNotFoundException {
+    public List<AcceptanceCriterion> generate(UserStory userStory, boolean debug) throws TokenNotFoundException {
         String userStoryString = userStory.getUserStoryString();
-        List<String> acceptanceCriteria = new ArrayList<String>();
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
         userStoryString = preprocessing(userStoryString);
         if (debug) {
-            acceptanceCriteria.add("DEBUG: " + userStoryString);
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString, AcceptanceCriterionType.DEBUG));
         }
 
         Properties props = new Properties();
@@ -207,8 +209,8 @@ public class GherkinGenerator implements Generator {
         return verb + "s";
     }
 
-    private List<String> extractRoleInformation(CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
-        List<String> acceptanceCriteria = new ArrayList<String>();
+    private List<AcceptanceCriterion> extractRoleInformation(CoreSentence userStorySentence, String userStoryString) throws TokenNotFoundException {
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
 
         Set<IndexedWord> wordsInUserStorySentence = userStorySentence.dependencyParse().getSubgraphVertices(userStorySentence.dependencyParse().getFirstRoot());
         
@@ -231,14 +233,14 @@ public class GherkinGenerator implements Generator {
         }
 
         if (indexAs == Integer.MAX_VALUE || indexTheUserWants == 0) {
-            acceptanceCriteria.add("WARNING: The role of the user story could not be identified.");
+            acceptanceCriteria.add(new AcceptanceCriterion("The role of the user story could not be identified.", AcceptanceCriterionType.WARNING));
         } else {
             int beginIndex = userStorySentence.dependencyParse().getNodeByIndex(indexAs + 1).beginPosition();
             if (userStorySentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).tag().equals(",")) {
                 indexTheUserWants -= 1;
             }
             int endIndex = userStorySentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).endPosition();
-            acceptanceCriteria.add("GIVEN " + userStoryString.substring(beginIndex, endIndex) + " is using the software");
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginIndex, endIndex), AcceptanceCriterionType.ROLE));
         }
 
         return acceptanceCriteria;
@@ -254,8 +256,8 @@ public class GherkinGenerator implements Generator {
         return null;
     }
 
-    private List<String> extractUIInformation(CoreSentence sentence, String userStoryString) {
-        List<String> acceptanceCriteria = new ArrayList<String>();
+    private List<AcceptanceCriterion> extractUIInformation(CoreSentence sentence, String userStoryString) {
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
         List<String> nerTags = sentence.nerTags();
         List<String> posTags = sentence.posTags();
         List<String> tokensAsStrings = sentence.tokensAsStrings();
@@ -319,13 +321,13 @@ public class GherkinGenerator implements Generator {
         int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex + 1).beginPosition();
         beginPosition = userStoryString.indexOf("the", beginPosition);
         int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex + 1).endPosition();
-        acceptanceCriteria.add("GIVEN the active user interface is " + userStoryString.substring(beginPosition, endPosition));
+        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.UI));
 
         return acceptanceCriteria;
     }
 
-    private List<String> extractConditionalInformation(CoreSentence sentence, String userStoryString) {
-        List<String> acceptanceCriteria = new ArrayList<String>();
+    private List<AcceptanceCriterion> extractConditionalInformation(CoreSentence sentence, String userStoryString) {
+        List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
         List<String> tokensAsStrings = sentence.tokensAsStrings();
         int indexSoThat = tokensAsStrings.size();
         for (int i = 1; i < tokensAsStrings.size(); i++) {
@@ -393,7 +395,7 @@ public class GherkinGenerator implements Generator {
             }
             int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
             int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-            acceptanceCriteria.add("WHEN " + userStoryString.substring(beginPosition, endPosition));
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
             if (conditionalStarterWord.index() > indexSoThat) {
                 beginIndex = endIndex + 1;
                 endIndex = wordsInSentence.size();
@@ -406,7 +408,7 @@ public class GherkinGenerator implements Generator {
                 if (beginIndex <= endIndex) {
                     beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
                     endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-                    acceptanceCriteria.add("THEN " + userStoryString.substring(beginPosition, endPosition));
+                    acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT));
                 }
             }
         }
@@ -423,11 +425,11 @@ public class GherkinGenerator implements Generator {
                     endPosition = Math.min(endPositionTo, endPositionAnd);
                 }
                 if (endPosition != -1) {
-                    String acceptanceCriterion = userStoryString.substring(beginPosition, endPosition);
-                    while (acceptanceCriterion.charAt(acceptanceCriterion.length() - 1) == ',' || acceptanceCriterion.charAt(acceptanceCriterion.length() - 1) == ' ') {
-                        acceptanceCriterion = acceptanceCriterion.substring(0, acceptanceCriterion.length() - 1);
+                    String acceptanceCriterionString = userStoryString.substring(beginPosition, endPosition);
+                    while (acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ',' || acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ' ') {
+                        acceptanceCriterionString = acceptanceCriterionString.substring(0, acceptanceCriterionString.length() - 1);
                     }
-                    acceptanceCriteria.add("WHEN the user clicks " + acceptanceCriterion);
+                    acceptanceCriteria.add(new AcceptanceCriterion(acceptanceCriterionString, AcceptanceCriterionType.CAUSE_INTERACTION));
                 }
             }
         }

@@ -36,9 +36,9 @@ public class UvlResponse {
         }
     }
 
-    public void addAC(String ac, int usNumber) {
+    public void addAcceptanceCriterion(AcceptanceCriterion ac, int usNumber) {
         JsonArray acAsArray = new JsonArray();
-        acAsArray.add(ac);
+        acAsArray.add(ac.toString());
         int ACCountOfUS = getACCountOfUS(usNumber);
         if (ACCountOfUS < 0) {
             this.us_ac.add(Integer.toString(usNumber), new JsonArray());
