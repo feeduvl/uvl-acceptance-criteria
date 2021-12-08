@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.acgen.model;
 
-public class AcceptanceCriterion {
+public class AcceptanceCriterion implements Comparable<AcceptanceCriterion> {
 
     String rawString;
     AcceptanceCriterionType type;
@@ -20,6 +20,10 @@ public class AcceptanceCriterion {
 
     public String toString() {
         return type.getGherkinKeyword() + (type.isLog() ? "" : " ") + type.getPrefix() + rawString + type.getSuffix();
+    }
+
+    public int compareTo(AcceptanceCriterion other) {
+        return this.getType().compareTo(other.getType());
     }
 
 }

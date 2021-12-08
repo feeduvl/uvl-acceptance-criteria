@@ -2,6 +2,7 @@ package de.uhd.ifi.se.acgen.generator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ public class GherkinGenerator implements Generator {
         acceptanceCriteria.addAll(extractUIInformation(userStorySentence, userStoryString));
         acceptanceCriteria.addAll(extractConditionalInformation(userStorySentence, userStoryString));
 
+        Collections.sort(acceptanceCriteria);
         return acceptanceCriteria;
     }
 
@@ -394,7 +396,7 @@ public class GherkinGenerator implements Generator {
         }
         int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
         int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
+        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), conditionalStarterWord.index() < indexSoThat ? AcceptanceCriterionType.CAUSE : AcceptanceCriterionType.CAUSE_IN_REASON));
         if (conditionalStarterWord.index() > indexSoThat) {
             acceptanceCriteria.addAll(extractEffectInformationFromConditionalStarterWordInReason(sentence, userStoryString, endIndex));
         }
@@ -415,7 +417,7 @@ public class GherkinGenerator implements Generator {
         if (beginIndex <= endIndex) {
             int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
             int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT));
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.EFFECT_IN_REASON));
         }
         return acceptanceCriteria;
     }
@@ -439,7 +441,7 @@ public class GherkinGenerator implements Generator {
             while (acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ',' || acceptanceCriterionString.charAt(acceptanceCriterionString.length() - 1) == ' ') {
                 acceptanceCriterionString = acceptanceCriterionString.substring(0, acceptanceCriterionString.length() - 1);
             }
-            acceptanceCriteria.add(new AcceptanceCriterion(acceptanceCriterionString, AcceptanceCriterionType.CAUSE_INTERACTION));
+            acceptanceCriteria.add(new AcceptanceCriterion("the user clicks " + acceptanceCriterionString, AcceptanceCriterionType.CAUSE));
         }
         return acceptanceCriteria;
     }

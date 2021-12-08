@@ -40,11 +40,21 @@ public class TestAcceptanceCriterion {
         assert(effectAcceptanceCriterion.getRawString().equals("das s muss mit"));
         assert(effectAcceptanceCriterion.toString().equals("THEN das s muss mit"));
 
-        AcceptanceCriterion causeInteractionAcceptanceCriterion = new AcceptanceCriterion("on a sample button", AcceptanceCriterionType.CAUSE_INTERACTION);
-        assertEquals(AcceptanceCriterionType.CAUSE_INTERACTION, causeInteractionAcceptanceCriterion.getType());
-        assertFalse(causeInteractionAcceptanceCriterion.getType().isLog());
-        assert(causeInteractionAcceptanceCriterion.getRawString().equals("on a sample button"));
-        assert(causeInteractionAcceptanceCriterion.toString().equals("WHEN the user clicks on a sample button"));
+        AcceptanceCriterion causeAcceptanceCriterionInReason = new AcceptanceCriterion("he, she, it", AcceptanceCriterionType.CAUSE_IN_REASON);
+        assertEquals(AcceptanceCriterionType.CAUSE_IN_REASON, causeAcceptanceCriterionInReason.getType());
+        assertFalse(causeAcceptanceCriterionInReason.getType().isLog());
+        assert(causeAcceptanceCriterionInReason.getRawString().equals("he, she, it"));
+        assert(causeAcceptanceCriterionInReason.toString().equals("WHEN he, she, it"));
+
+        AcceptanceCriterion effectAcceptanceCriterionInReason = new AcceptanceCriterion("das s muss mit", AcceptanceCriterionType.EFFECT_IN_REASON);
+        assertEquals(AcceptanceCriterionType.EFFECT_IN_REASON, effectAcceptanceCriterionInReason.getType());
+        assertFalse(effectAcceptanceCriterionInReason.getType().isLog());
+        assert(effectAcceptanceCriterionInReason.getRawString().equals("das s muss mit"));
+        assert(effectAcceptanceCriterionInReason.toString().equals("THEN das s muss mit"));
+
+        assertTrue(causeAcceptanceCriterion.compareTo(effectAcceptanceCriterion) < 0);
+        assertTrue(causeAcceptanceCriterion.compareTo(causeAcceptanceCriterionInReason) < 0);
+        assertTrue(causeAcceptanceCriterionInReason.compareTo(effectAcceptanceCriterionInReason) < 0);
     }
 
     @Test
@@ -72,5 +82,9 @@ public class TestAcceptanceCriterion {
         assertTrue(debugAcceptanceCriterion.getType().isLog());
         assert(debugAcceptanceCriterion.getRawString().equals("Beep boop!"));
         assert(debugAcceptanceCriterion.toString().equals("DEBUG: Beep boop!"));
+
+        assertTrue(errorAcceptanceCriterion.compareTo(warningAcceptanceCriterion) < 0);
+        assertTrue(warningAcceptanceCriterion.compareTo(infoAcceptanceCriterion) < 0);
+        assertTrue(infoAcceptanceCriterion.compareTo(debugAcceptanceCriterion) < 0);
     }
 }
