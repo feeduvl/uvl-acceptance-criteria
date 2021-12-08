@@ -328,7 +328,7 @@ public class GherkinGenerator implements Generator {
     private List<AcceptanceCriterion> extractConditionalInformation(CoreSentence sentence, String userStoryString) {
         List<AcceptanceCriterion> acceptanceCriteria = new ArrayList<AcceptanceCriterion>();
         List<String> tokensAsStrings = sentence.tokensAsStrings();
-        int indexSoThat = tokensAsStrings.size();
+        int indexSoThat = tokensAsStrings.size() + 1;
         for (int i = 1; i < tokensAsStrings.size(); i++) {
             if (tokensAsStrings.get(i - 1).equalsIgnoreCase("so") && tokensAsStrings.get(i).equalsIgnoreCase("that")) {
                 indexSoThat = i;
@@ -336,21 +336,18 @@ public class GherkinGenerator implements Generator {
             }
         }
 
-        List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever");
+        List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever", "after");
+        List<String> conditionalLimiterStrings = Arrays.asList("also", "even", "especially");
 
-        int firstConditionalStarterIndex = Integer.MAX_VALUE;
-        for (int i = 1; i < indexSoThat + 1; i++) {
+        List<IndexedWord> conditionalStarterWords = new ArrayList<IndexedWord>();
+
+        for (int i = 3; i < indexSoThat; i++) {
             IndexedWord word = sentence.dependencyParse().getNodeByIndex(i);
-            if (conditionalStarterStrings.contains(word.word().toLowerCase()) ) {
-                firstConditionalStarterIndex = Math.min(firstConditionalStarterIndex, word.index());
-                break;
+            if ((conditionalStarterStrings.contains(word.word().toLowerCase()) || isAsSoonAs(sentence, i)) && !conditionalLimiterStrings.contains(sentence.dependencyParse().getNodeByIndex(i - 1).word().toLowerCase()) && !sentence.dependencyParse().getNodeByIndex(i + 1).word().equalsIgnoreCase("and")) {
+                conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(i));
             }
         }
 
-        List<IndexedWord> conditionalStarterWords = new ArrayList<IndexedWord>();
-        if (firstConditionalStarterIndex != Integer.MAX_VALUE) {
-            conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(firstConditionalStarterIndex));
-        }
         if (indexSoThat + 2 < tokensAsStrings.size() && conditionalStarterStrings.contains(sentence.dependencyParse().getNodeByIndex(indexSoThat + 2).word().toLowerCase())) {
             conditionalStarterWords.add(sentence.dependencyParse().getNodeByIndex(indexSoThat + 2));
         }
@@ -362,6 +359,10 @@ public class GherkinGenerator implements Generator {
         acceptanceCriteria.addAll(extractConditionalInformationFromInteraction(userStoryString));
 
         return acceptanceCriteria;
+    }
+
+    private boolean isAsSoonAs(CoreSentence sentence, int i) {
+        return sentence.dependencyParse().getNodeByIndex(i).word().equalsIgnoreCase("as") && sentence.dependencyParse().getNodeByIndex(i - 1).word().equalsIgnoreCase("soon") && sentence.dependencyParse().getNodeByIndex(i - 2).word().equalsIgnoreCase("as");
     }
 
     private List<AcceptanceCriterion> extractCauseInformationFromConditionalStarterWord(CoreSentence sentence, String userStoryString, IndexedWord conditionalStarterWord, int indexSoThat) {
@@ -396,8 +397,10 @@ public class GherkinGenerator implements Generator {
         }
         int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
         int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), conditionalStarterWord.index() < indexSoThat ? AcceptanceCriterionType.CAUSE : AcceptanceCriterionType.CAUSE_IN_REASON));
-        if (conditionalStarterWord.index() > indexSoThat) {
+        if (conditionalStarterWord.index() < indexSoThat) {
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
+        } else {
+            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE_IN_REASON));
             acceptanceCriteria.addAll(extractEffectInformationFromConditionalStarterWordInReason(sentence, userStoryString, endIndex));
         }
         return acceptanceCriteria;
@@ -427,7 +430,7 @@ public class GherkinGenerator implements Generator {
         if (!userStoryString.toLowerCase().contains("to click")) {
             return acceptanceCriteria;
         }
-        int beginPosition = userStoryString.toLowerCase().indexOf("to click") + 9;
+        int beginPosition = userStoryString.toLowerCase().indexOf("to click") + "to click ".length();
         int endPositionTo = userStoryString.toLowerCase().indexOf(" to ", beginPosition);
         int endPositionAnd = userStoryString.toLowerCase().indexOf(" and ", beginPosition);
         int endPosition = -1;
