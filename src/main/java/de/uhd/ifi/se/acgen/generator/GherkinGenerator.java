@@ -336,8 +336,8 @@ public class GherkinGenerator implements Generator {
             }
         }
 
-        List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever", "after");
-        List<String> conditionalLimiterStrings = Arrays.asList("also", "even", "especially");
+        List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever", "after", "during");
+        List<String> conditionalLimiterStrings = Arrays.asList("also", "even", "especially", "necessary");
 
         List<IndexedWord> conditionalStarterWords = new ArrayList<IndexedWord>();
 
@@ -376,6 +376,46 @@ public class GherkinGenerator implements Generator {
         conditionWords.sort((word, otherWord) -> word.index() - otherWord.index());
         conditionWords.removeIf(word -> word.index() < conditionalStarterWord.index());
         int beginIndex = conditionalStarterWord.index() + 1;
+        if (sentence.nerTags().get(conditionalStarterWord.index() - 1 - 1).equals("DURATION")) {
+            int indexOfDuration = conditionalStarterWord.index() - 1 - 1;
+            while (sentence.nerTags().get(indexOfDuration - 1).equals("DURATION")) {
+                indexOfDuration -= 1;
+            }
+            beginIndex = indexOfDuration + 1;
+        }
+        int endIndex = determineEndIndex(conditionWords, conditionalStarterWord, indexSoThat, sentence);
+        int wordsInSentenceCount = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot()).size();
+        if (conditionalStarterWord.index() > indexSoThat && endIndex >= wordsInSentenceCount - 1) {
+            return acceptanceCriteria;
+        }
+        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+        String conditionString = userStoryString.substring(beginPosition, endPosition);
+        if (sentence.nerTags().get(conditionalStarterWord.index() - 1 - 1).equals("DURATION")) {
+            conditionString = userStoryString.substring(beginPosition, conditionalStarterWord.beginPosition()) + "passed " + userStoryString.substring(conditionalStarterWord.beginPosition(), endPosition);
+        }
+        if (!verbInCondition(conditionWords, root, conditionString)) {
+            conditionString += " happens";
+        }
+        if (conditionalStarterWord.index() < indexSoThat) {
+            acceptanceCriteria.add(new AcceptanceCriterion(conditionString, AcceptanceCriterionType.CAUSE));
+        } else {
+            acceptanceCriteria.add(new AcceptanceCriterion(conditionString, AcceptanceCriterionType.CAUSE_IN_REASON));
+            acceptanceCriteria.addAll(extractEffectInformationFromConditionalStarterWordInReason(sentence, userStoryString, endIndex));
+        }
+        return acceptanceCriteria;
+    }
+
+    private boolean verbInCondition(List<IndexedWord> conditionWords, IndexedWord root, String conditionString) {
+        for (IndexedWord conditionWord : conditionWords) {
+            if (conditionWord.tag().startsWith("VB") || (root.tag().startsWith("NN") && root.tag().endsWith("S"))) {
+                return true;
+            }
+        }
+        return conditionString.endsWith("[…]");
+    }
+
+    private int determineEndIndex(List<IndexedWord> conditionWords, IndexedWord conditionalStarterWord, int indexSoThat, CoreSentence sentence) {
         int endIndex = conditionWords.get(conditionWords.size() - 1).index();
         if (conditionalStarterWord.index() < indexSoThat) {
             endIndex = Math.min(endIndex, indexSoThat - 1);
@@ -386,24 +426,22 @@ public class GherkinGenerator implements Generator {
                 inParentheses += 1;
             } else if (conditionWord.tag().equals("-RRB-")) {
                 inParentheses -= 1;
-            } else if (conditionWord.word().equals(",") && inParentheses == 0) {
+            } else if ((conditionWord.word().equals(",") || (conditionWord.word().equalsIgnoreCase("that") && conditionWord.tag().equals("IN"))) && inParentheses == 0) {
                 endIndex = Math.min(endIndex, conditionWord.index() - 1);
                 break;
             }
         }
-        int wordsInSentenceCount = sentence.dependencyParse().getSubgraphVertices(sentence.dependencyParse().getFirstRoot()).size();
-        if (conditionalStarterWord.index() > indexSoThat && endIndex >= wordsInSentenceCount - 1) {
-            return acceptanceCriteria;
+        if (endIndex < sentence.posTags().size() && sentence.posTags().get(endIndex - 1 + 1).equals("-LRB-")) {
+            endIndex += 1;
+            inParentheses += 1;
         }
-        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
-        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-        if (conditionalStarterWord.index() < indexSoThat) {
-            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE));
-        } else {
-            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.CAUSE_IN_REASON));
-            acceptanceCriteria.addAll(extractEffectInformationFromConditionalStarterWordInReason(sentence, userStoryString, endIndex));
+        while (endIndex < sentence.posTags().size() && inParentheses > 0) {
+            endIndex += 1;
+            if (sentence.posTags().get(endIndex - 1).equals("-RRB-")) {
+                inParentheses -= 1;
+            }
         }
-        return acceptanceCriteria;
+        return endIndex;
     }
 
     private List<AcceptanceCriterion> extractEffectInformationFromConditionalStarterWordInReason(CoreSentence sentence, String userStoryString, int endIndexOfCause) {
@@ -454,7 +492,10 @@ public class GherkinGenerator implements Generator {
         if (parent.tag().startsWith("VB") && parent.index() > conditionalStarterWord.index()) {
             return parent;
         }
-        return conditionalStarterWord;
+        if (sentence.dependencyParse().getSubgraphVertices(conditionalStarterWord).size() > 1 || sentence.dependencyParse().getNodeByIndex(conditionalStarterWord.index() + 1).word().equalsIgnoreCase("necessary") || sentence.dependencyParse().getNodeByIndex(conditionalStarterWord.index() - 1).tag().equals("-LRB-") || sentence.nerTags().get(conditionalStarterWord.index() - 1).toUpperCase().startsWith("DATE")) {
+            return conditionalStarterWord;
+        }
+        return parent;
     }
 
 }
