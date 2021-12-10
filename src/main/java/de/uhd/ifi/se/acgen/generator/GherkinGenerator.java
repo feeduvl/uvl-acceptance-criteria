@@ -557,29 +557,30 @@ public class GherkinGenerator implements Generator {
     }
 
     private String postProcessingOfReasonString(String resultString, CoreSentence sentence) throws TokenNotFoundException {
+        String processedResultString = resultString;
         IndexedWord verb = getVerb(sentence, true);
         IndexedWord firstWordAfterVerb = sentence.dependencyParse().getNodeByIndex(verb.index() + 1);
         IndexedWord secondWordAfterVerb = sentence.dependencyParse().getNodeByIndex(verb.index() + 2);
 
         if (firstWordAfterVerb.tag().equals("TO") && secondWordAfterVerb.tag().equals("VB")) {
-            resultString = resultString.substring(0, verb.beginPosition()) + heSheItDasSMussMit(secondWordAfterVerb.word()) + resultString.substring(sentence.dependencyParse().getNodeByIndex(verb.index() + 3).beginPosition() - 1);
+            processedResultString = processedResultString.substring(0, verb.beginPosition()) + heSheItDasSMussMit(secondWordAfterVerb.word()) + processedResultString.substring(sentence.dependencyParse().getNodeByIndex(verb.index() + 3).beginPosition() - 1);
         } else if (firstWordAfterVerb.tag().equals("IN")) {
-            resultString = resultString.substring(firstWordAfterVerb.endPosition() + 1);
+            processedResultString = processedResultString.substring(firstWordAfterVerb.endPosition() + 1);
         } else if (firstWordAfterVerb.tag().equals(",") && secondWordAfterVerb.tag().equals("IN")) {
-            resultString = resultString.substring(secondWordAfterVerb.endPosition() + 1);
+            processedResultString = processedResultString.substring(secondWordAfterVerb.endPosition() + 1);
         } else {
-            resultString = resultString.substring(0, verb.beginPosition()) + " is provided with " + resultString.substring(firstWordAfterVerb.beginPosition());
+            processedResultString = processedResultString.substring(0, verb.beginPosition()) + " is provided with " + processedResultString.substring(firstWordAfterVerb.beginPosition());
         }
 
-        resultString = resultString.replaceAll(" , ", " ");
-        resultString = resultString.replaceAll("\\s+", " ");
-        if (resultString.startsWith(" ")) {
-            resultString = resultString.substring(1);
+        processedResultString = processedResultString.replaceAll(" , ", " ");
+        processedResultString = processedResultString.replaceAll("\\s+", " ");
+        if (processedResultString.startsWith(" ")) {
+            processedResultString = processedResultString.substring(1);
         }
-        while (resultString.endsWith(",") || resultString.endsWith(" ") || resultString.endsWith(".")) {
-            resultString = resultString.substring(0, resultString.length() - 1);
+        while (processedResultString.endsWith(",") || processedResultString.endsWith(" ") || processedResultString.endsWith(".")) {
+            processedResultString = processedResultString.substring(0, processedResultString.length() - 1);
         }
-        return resultString;
+        return processedResultString;
     }
 
     private List<AcceptanceCriterion> resolveDuplicateInformation(List<AcceptanceCriterion> acceptanceCriteria) {
