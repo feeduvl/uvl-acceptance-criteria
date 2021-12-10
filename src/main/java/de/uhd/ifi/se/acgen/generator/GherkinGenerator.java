@@ -568,6 +568,17 @@ public class GherkinGenerator implements Generator {
             processedResultString = processedResultString.substring(firstWordAfterVerb.endPosition() + 1);
         } else if (firstWordAfterVerb.tag().equals(",") && secondWordAfterVerb.tag().equals("IN")) {
             processedResultString = processedResultString.substring(secondWordAfterVerb.endPosition() + 1);
+        } else if (getInfinitiveToWord(sentence) != null && getInfinitiveToWord(sentence).endPosition() < processedResultString.length()) {
+            IndexedWord infinitiveToWord = getInfinitiveToWord(sentence);
+            processedResultString = processedResultString.substring(firstWordAfterVerb.beginPosition());
+            int infinitiveToIndex = processedResultString.indexOf("to " + infinitiveToWord.word());
+            String infinitiveToString = infinitiveToWord.word();
+            if (!childContainsPluralNoun(verb, sentence)) {
+                infinitiveToString = heSheItDasSMussMit(infinitiveToString);
+            } else if (infinitiveToString.equalsIgnoreCase("be")) {
+                infinitiveToString = "are";
+            }
+            processedResultString = processedResultString.substring(0, infinitiveToIndex) + infinitiveToString + " " + processedResultString.substring(infinitiveToIndex + 3 + infinitiveToWord.word().length());
         } else {
             processedResultString = processedResultString.substring(0, verb.beginPosition()) + " is provided with " + processedResultString.substring(firstWordAfterVerb.beginPosition());
         }
@@ -581,6 +592,24 @@ public class GherkinGenerator implements Generator {
             processedResultString = processedResultString.substring(0, processedResultString.length() - 1);
         }
         return processedResultString;
+    }
+
+    private boolean childContainsPluralNoun(IndexedWord verb, CoreSentence sentence) {
+        for (IndexedWord child : sentence.dependencyParse().getChildList(verb)) {
+            if (child.tag().startsWith("NN") && child.tag().endsWith("S") && !child.word().equalsIgnoreCase("details")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private IndexedWord getInfinitiveToWord(CoreSentence sentence) {
+        for (int i = 1; i < sentence.posTags().size(); i++){
+            if (sentence.posTags().get(i).equals("VB") &&sentence.posTags().get(i - 1).equals("TO")) {
+                return sentence.dependencyParse().getNodeByIndex(i + 1);
+            }
+        }
+        return null;
     }
 
     private List<AcceptanceCriterion> resolveDuplicateInformation(List<AcceptanceCriterion> acceptanceCriteria) {
