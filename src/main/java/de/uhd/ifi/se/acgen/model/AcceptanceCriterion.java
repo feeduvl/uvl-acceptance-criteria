@@ -4,18 +4,37 @@ public class AcceptanceCriterion implements Comparable<AcceptanceCriterion> {
 
     String rawString;
     AcceptanceCriterionType type;
+    int beginReplacementIndex;
+    int endReplacementIndex;
     
     public AcceptanceCriterion(String _rawString, AcceptanceCriterionType _type) {
         rawString = _rawString;
         type = _type;
+        beginReplacementIndex = -1;
+        endReplacementIndex = -1;
+    }
+
+    public AcceptanceCriterion(String _rawString, AcceptanceCriterionType _type, int _beginReplacementIndex, int _endReplacementIndex) {
+        rawString = _rawString;
+        type = _type;
+        beginReplacementIndex = _beginReplacementIndex;
+        endReplacementIndex = _endReplacementIndex;
     }
 
     public String getRawString() {
-        return this.rawString;
+        return rawString;
     }
 
     public AcceptanceCriterionType getType() {
-        return this.type;
+        return type;
+    }
+
+    public int getBeginReplacementIndex() {
+        return beginReplacementIndex;
+    }
+
+    public int getEndReplacementIndex() {
+        return endReplacementIndex;
     }
 
     public String toString() {
@@ -23,7 +42,7 @@ public class AcceptanceCriterion implements Comparable<AcceptanceCriterion> {
     }
 
     public int compareTo(AcceptanceCriterion other) {
-        return this.getType().compareTo(other.getType());
+        return this.getType().equals(other.getType()) ? this.getBeginReplacementIndex() - other.getBeginReplacementIndex() : this.getType().compareTo(other.getType());
     }
 
 }

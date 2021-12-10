@@ -9,10 +9,12 @@ import org.junit.jupiter.api.Test;
 public class TestAcceptanceCriterion {
     
     @Test
-    public void testRoleAcceptanceCriterion() {
-        AcceptanceCriterion roleAcceptanceCriterion = new AcceptanceCriterion("a developer", AcceptanceCriterionType.ROLE);
+    public void testRoleAcceptanceCriterionAndPositions() {
+        AcceptanceCriterion roleAcceptanceCriterion = new AcceptanceCriterion("a developer", AcceptanceCriterionType.ROLE, 1, 2);
         assertEquals(AcceptanceCriterionType.ROLE, roleAcceptanceCriterion.getType());
         assertFalse(roleAcceptanceCriterion.getType().isLog());
+        assertEquals(1, roleAcceptanceCriterion.getBeginReplacementIndex());
+        assertEquals(2, roleAcceptanceCriterion.getEndReplacementIndex());
         assert(roleAcceptanceCriterion.getRawString().equals("a developer"));
         assert(roleAcceptanceCriterion.toString().equals("GIVEN a developer is using the software"));
     }
@@ -22,37 +24,41 @@ public class TestAcceptanceCriterion {
         AcceptanceCriterion uiAcceptanceCriterion = new AcceptanceCriterion("the example view under \"more examples\"", AcceptanceCriterionType.UI);
         assertEquals(AcceptanceCriterionType.UI, uiAcceptanceCriterion.getType());
         assertFalse(uiAcceptanceCriterion.getType().isLog());
+        assertEquals(-1, uiAcceptanceCriterion.getBeginReplacementIndex());
+        assertEquals(-1, uiAcceptanceCriterion.getEndReplacementIndex());
         assert(uiAcceptanceCriterion.getRawString().equals("the example view under \"more examples\""));
         assert(uiAcceptanceCriterion.toString().equals("GIVEN the active user interface is the example view under \"more examples\""));
     }
 
     @Test
     public void testConditionalAcceptanceCriterion() {
-        AcceptanceCriterion causeAcceptanceCriterion = new AcceptanceCriterion("he, she, it", AcceptanceCriterionType.CAUSE);
-        assertEquals(AcceptanceCriterionType.CAUSE, causeAcceptanceCriterion.getType());
+        AcceptanceCriterion causeAcceptanceCriterion = new AcceptanceCriterion("he, she, it", AcceptanceCriterionType.ACTION, 1, 5);
+        AcceptanceCriterion anotherCauseAcceptanceCriterion = new AcceptanceCriterion("she, it", AcceptanceCriterionType.ACTION, 3, 5);
+        assertEquals(AcceptanceCriterionType.ACTION, causeAcceptanceCriterion.getType());
         assertFalse(causeAcceptanceCriterion.getType().isLog());
         assert(causeAcceptanceCriterion.getRawString().equals("he, she, it"));
         assert(causeAcceptanceCriterion.toString().equals("WHEN he, she, it"));
 
-        AcceptanceCriterion effectAcceptanceCriterion = new AcceptanceCriterion("das s muss mit", AcceptanceCriterionType.EFFECT);
-        assertEquals(AcceptanceCriterionType.EFFECT, effectAcceptanceCriterion.getType());
+        AcceptanceCriterion effectAcceptanceCriterion = new AcceptanceCriterion("das s muss mit", AcceptanceCriterionType.RESULT);
+        assertEquals(AcceptanceCriterionType.RESULT, effectAcceptanceCriterion.getType());
         assertFalse(effectAcceptanceCriterion.getType().isLog());
         assert(effectAcceptanceCriterion.getRawString().equals("das s muss mit"));
         assert(effectAcceptanceCriterion.toString().equals("THEN das s muss mit"));
 
-        AcceptanceCriterion causeAcceptanceCriterionInReason = new AcceptanceCriterion("he, she, it", AcceptanceCriterionType.CAUSE_IN_REASON);
-        assertEquals(AcceptanceCriterionType.CAUSE_IN_REASON, causeAcceptanceCriterionInReason.getType());
+        AcceptanceCriterion causeAcceptanceCriterionInReason = new AcceptanceCriterion("he, she, it", AcceptanceCriterionType.ACTION_IN_REASON);
+        assertEquals(AcceptanceCriterionType.ACTION_IN_REASON, causeAcceptanceCriterionInReason.getType());
         assertFalse(causeAcceptanceCriterionInReason.getType().isLog());
         assert(causeAcceptanceCriterionInReason.getRawString().equals("he, she, it"));
         assert(causeAcceptanceCriterionInReason.toString().equals("WHEN he, she, it"));
 
-        AcceptanceCriterion effectAcceptanceCriterionInReason = new AcceptanceCriterion("das s muss mit", AcceptanceCriterionType.EFFECT_IN_REASON);
-        assertEquals(AcceptanceCriterionType.EFFECT_IN_REASON, effectAcceptanceCriterionInReason.getType());
+        AcceptanceCriterion effectAcceptanceCriterionInReason = new AcceptanceCriterion("das s muss mit", AcceptanceCriterionType.RESULT_IN_REASON);
+        assertEquals(AcceptanceCriterionType.RESULT_IN_REASON, effectAcceptanceCriterionInReason.getType());
         assertFalse(effectAcceptanceCriterionInReason.getType().isLog());
         assert(effectAcceptanceCriterionInReason.getRawString().equals("das s muss mit"));
         assert(effectAcceptanceCriterionInReason.toString().equals("THEN das s muss mit"));
 
         assertTrue(causeAcceptanceCriterion.compareTo(effectAcceptanceCriterion) < 0);
+        assertTrue(causeAcceptanceCriterion.compareTo(anotherCauseAcceptanceCriterion) < 0);
         assertTrue(causeAcceptanceCriterion.compareTo(causeAcceptanceCriterionInReason) < 0);
         assertTrue(causeAcceptanceCriterionInReason.compareTo(effectAcceptanceCriterionInReason) < 0);
     }
