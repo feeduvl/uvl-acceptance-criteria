@@ -646,7 +646,7 @@ public class GherkinGenerator implements Generator {
     }
 
     private AcceptanceCriterion replaceUIDescription(AcceptanceCriterion acceptanceCriterion, String uiDescription) {
-        if (uiDescription == null && acceptanceCriterion.getRawString().contains(uiDescription)) {
+        if (uiDescription != null && acceptanceCriterion.getRawString().contains(uiDescription)) {
             return new AcceptanceCriterion(acceptanceCriterion.getRawString().replace(uiDescription, "the active user interface"), acceptanceCriterion.getType(), acceptanceCriterion.getBeginReplacementIndex(), acceptanceCriterion.getEndReplacementIndex());
         }
         return acceptanceCriterion;
