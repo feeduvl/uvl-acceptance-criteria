@@ -538,7 +538,7 @@ public class GherkinGenerator implements Generator {
             resultString = resultString.substring(0, resultString.length() - 1);
         }
         for (AcceptanceCriterion acceptanceCriterion : acceptanceCriteria) {
-            if (acceptanceCriterion.getBeginReplacementIndex() <= 0 || acceptanceCriterion.getEndReplacementIndex() > sentence.tokensAsStrings().size() || acceptanceCriterion.getBeginReplacementIndex() >= acceptanceCriterion.getEndReplacementIndex()) {
+            if (acceptanceCriterion.getBeginReplacementIndex() <= 0 || acceptanceCriterion.getEndReplacementIndex() > sentence.tokensAsStrings().size() || acceptanceCriterion.getBeginReplacementIndex() >= acceptanceCriterion.getEndReplacementIndex() || acceptanceCriterion.getType().equals(AcceptanceCriterionType.UI)) {
                 continue;
             }
             int beginReplacementPosition = sentence.dependencyParse().getNodeByIndex(acceptanceCriterion.getBeginReplacementIndex()).beginPosition();
