@@ -68,7 +68,7 @@ public class GherkinGenerator implements Generator {
         Map<Integer, String> replacements = new HashMap<Integer, String>();
 
         replacements.putAll(switchToThirdPerson(document, userStorySentence));
-        replacements.putAll(resolvePronouns(document, userStorySentence, replacements));
+        // replacements.putAll(resolvePronouns(document, userStorySentence, replacements));
 
         return replaceWordsInSentence(userStorySentence, userStoryString, replacements);
     }
@@ -94,33 +94,33 @@ public class GherkinGenerator implements Generator {
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("mine")) {
                 newReplacements.put(coreferenceOfSubject.index(), "the user’s");
             } else if (coreferenceOfSubject.word().equalsIgnoreCase("myself")) {
-                newReplacements.put(coreferenceOfSubject.index(), "the user");
+                newReplacements.put(coreferenceOfSubject.index(), "themself");
             }
         }
         return newReplacements;
     }
 
-    private Map<Integer, String> resolvePronouns(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replacements) {
-        Map<Integer, String> newReplacements = new HashMap<Integer, String>();
-        for (CorefChain chain : document.annotation().get(CorefCoreAnnotations.CorefChainAnnotation.class).values()) {
-            List<CorefMention> mentionsInChain = chain.getMentionsInTextualOrder();
-            for (CorefMention mention : mentionsInChain) {
-                if (replacements.containsKey(mention.headIndex) || newReplacements.containsKey(mention.headIndex)) {
-                    continue;
-                }
-                if (userStorySentence.dependencyParse().getNodeByIndex(mention.headIndex).tag().equals("PRP")) {
-                    newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan);
-                } else if (userStorySentence.dependencyParse().getNodeByIndex(mention.headIndex).tag().equals("PRP$")) {
-                    if (chain.getRepresentativeMention().mentionSpan.charAt(chain.getRepresentativeMention().mentionSpan.length() - 1) == 's') {
-                        newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’");
-                    } else {
-                        newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’s");
-                    }
-                }
-            }
-        }
-        return newReplacements;
-    }
+    // private Map<Integer, String> resolvePronouns(CoreDocument document, CoreSentence userStorySentence, Map<Integer, String> replacements) {
+    //     Map<Integer, String> newReplacements = new HashMap<Integer, String>();
+    //     for (CorefChain chain : document.annotation().get(CorefCoreAnnotations.CorefChainAnnotation.class).values()) {
+    //         List<CorefMention> mentionsInChain = chain.getMentionsInTextualOrder();
+    //         for (CorefMention mention : mentionsInChain) {
+    //             if (replacements.containsKey(mention.headIndex) || newReplacements.containsKey(mention.headIndex)) {
+    //                 continue;
+    //             }
+    //             if (userStorySentence.dependencyParse().getNodeByIndex(mention.headIndex).tag().equals("PRP")) {
+    //                 newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan);
+    //             } else if (userStorySentence.dependencyParse().getNodeByIndex(mention.headIndex).tag().equals("PRP$")) {
+    //                 if (chain.getRepresentativeMention().mentionSpan.charAt(chain.getRepresentativeMention().mentionSpan.length() - 1) == 's') {
+    //                     newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’");
+    //                 } else {
+    //                     newReplacements.put(mention.headIndex, chain.getRepresentativeMention().mentionSpan + "’s");
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return newReplacements;
+    // }
 
     private IndexedWord getSubject(CoreSentence sentence) throws TokenNotFoundException {
         IndexedWord verb = getVerb(sentence, false);
@@ -317,8 +317,8 @@ public class GherkinGenerator implements Generator {
                     endIndex = i + 2;
                 } else if (posTags.get(i).equals("``") && posTags.subList(i + 1, posTags.size()).contains("''")) {
                     endIndex = i + 2 + posTags.subList(i + 1, posTags.size()).indexOf("''");
-                } else if (posTags.get(i).equals("-LRB-") && posTags.subList(i + 1, posTags.size()).contains("-RRB-")) {
-                    endIndex = i + 2 + posTags.subList(i + 1, posTags.size()).indexOf("-RRB-");
+                } else if (posTags.get(i).equals("-LRB-") && posTags.get(i + 2).equals("-RRB-") && tokensAsStrings.get(i + 1).equals("ET")) {
+                    endIndex = i + 3;
                 } else if (tokensAsStrings.get(i).equals("\"") && tokensAsStrings.subList(i + 1, tokensAsStrings.size()).contains("\"")) {
                     endIndex = i + 2 + tokensAsStrings.subList(i + 1, tokensAsStrings.size()).indexOf("\"");
                 } else if (tokensAsStrings.get(i).equals(">") && (posTags.get(i - 1).equals("HYPH") || tokensAsStrings.get(i - 1).equals("-"))) {
@@ -561,33 +561,58 @@ public class GherkinGenerator implements Generator {
         IndexedWord verb = getVerb(sentence, true);
         IndexedWord firstWordAfterVerb = sentence.dependencyParse().getNodeByIndex(verb.index() + 1);
         IndexedWord secondWordAfterVerb = sentence.dependencyParse().getNodeByIndex(verb.index() + 2);
+        IndexedWord thirdWordAfterVerb = sentence.dependencyParse().getNodeByIndex(verb.index() + 3);
 
         if (firstWordAfterVerb.tag().equals("TO") && secondWordAfterVerb.tag().equals("VB")) {
-            processedResultString = processedResultString.substring(0, verb.beginPosition()) + heSheItDasSMussMit(secondWordAfterVerb.word()) + processedResultString.substring(sentence.dependencyParse().getNodeByIndex(verb.index() + 3).beginPosition() - 1);
+            processedResultString = processedResultString.substring(0, verb.beginPosition()) + heSheItDasSMussMit(secondWordAfterVerb.word()) + " " + processedResultString.substring(secondWordAfterVerb.endPosition());
+        } else if (firstWordAfterVerb.tag().equals("TO") && secondWordAfterVerb.tag().equals("RB") && thirdWordAfterVerb.tag().equals("VB")) {
+            processedResultString = processedResultString.substring(0, verb.beginPosition()) + secondWordAfterVerb.word() + " " + heSheItDasSMussMit(thirdWordAfterVerb.word()) + processedResultString.substring(thirdWordAfterVerb.endPosition());
         } else if (firstWordAfterVerb.tag().equals("IN")) {
             processedResultString = processedResultString.substring(firstWordAfterVerb.endPosition() + 1);
         } else if (firstWordAfterVerb.tag().equals(",") && secondWordAfterVerb.tag().equals("IN")) {
             processedResultString = processedResultString.substring(secondWordAfterVerb.endPosition() + 1);
         } else if (getInfinitiveToWord(sentence) != null && getInfinitiveToWord(sentence).endPosition() < processedResultString.length()) {
             IndexedWord infinitiveToWord = getInfinitiveToWord(sentence);
-            processedResultString = processedResultString.substring(firstWordAfterVerb.beginPosition());
-            int infinitiveToIndex = processedResultString.indexOf("to " + infinitiveToWord.word());
-            String infinitiveToString = infinitiveToWord.word();
-            if (!childContainsPluralNoun(verb, sentence)) {
-                infinitiveToString = heSheItDasSMussMit(infinitiveToString);
-            } else if (infinitiveToString.equalsIgnoreCase("be")) {
-                infinitiveToString = "are";
+            if (firstWordAfterVerb.tag().equals(",") && conditionalStarterStrings.contains(secondWordAfterVerb.word().toLowerCase())) {
+                processedResultString = processedResultString.substring(0, verb.beginPosition()) + processedResultString.substring(firstWordAfterVerb.beginPosition());
+            } else {
+                processedResultString = processedResultString.substring(firstWordAfterVerb.beginPosition());
             }
-            processedResultString = processedResultString.substring(0, infinitiveToIndex) + infinitiveToString + " " + processedResultString.substring(infinitiveToIndex + 3 + infinitiveToWord.word().length());
+            int infinitiveToIndex = processedResultString.indexOf("to " + infinitiveToWord.word());
+            if (infinitiveToIndex != -1) {
+                String infinitiveToString = infinitiveToWord.word();
+                if (!childContainsPluralNoun(verb, sentence)) {
+                    infinitiveToString = heSheItDasSMussMit(infinitiveToString);
+                } else if (infinitiveToString.equalsIgnoreCase("be")) {
+                    infinitiveToString = "are";
+                }
+                processedResultString = processedResultString.substring(0, infinitiveToIndex) + infinitiveToString + " " + processedResultString.substring(infinitiveToIndex + 3 + infinitiveToWord.word().length());
+            }
+        } else if (getInfinitiveToWordWithAdverb(sentence) != null && getInfinitiveToWordWithAdverb(sentence).endPosition() < processedResultString.length()) {
+            IndexedWord infinitiveToWord = getInfinitiveToWordWithAdverb(sentence);
+            IndexedWord adverb = sentence.dependencyParse().getNodeByIndex(infinitiveToWord.index() - 1);
+            processedResultString = processedResultString.substring(firstWordAfterVerb.beginPosition());
+            int infinitiveToIndex = processedResultString.indexOf("to " + adverb.word() + " " + infinitiveToWord.word());
+            if (infinitiveToIndex != -1) {
+                String infinitiveToString = infinitiveToWord.word();
+                if (!childContainsPluralNoun(verb, sentence)) {
+                    infinitiveToString = heSheItDasSMussMit(infinitiveToString);
+                } else if (infinitiveToString.equalsIgnoreCase("be")) {
+                    infinitiveToString = "are";
+                }
+                if (adverb.word().equalsIgnoreCase("not")) {
+                    processedResultString = processedResultString.substring(0, infinitiveToIndex) + infinitiveToString + " " + adverb.word() + " " + processedResultString.substring(infinitiveToIndex + 4 + adverb.word().length() + infinitiveToWord.word().length());
+                } else {
+                    processedResultString = processedResultString.substring(0, infinitiveToIndex) + adverb.word() + " " + infinitiveToString + " " + processedResultString.substring(infinitiveToIndex + 4 + adverb.word().length() + infinitiveToWord.word().length());
+                }
+            }
         } else {
             processedResultString = processedResultString.substring(0, verb.beginPosition()) + " is provided with " + processedResultString.substring(firstWordAfterVerb.beginPosition());
         }
 
         processedResultString = processedResultString.replaceAll(" , ", " ");
         processedResultString = processedResultString.replaceAll("\\s+", " ");
-        if (processedResultString.startsWith(" ")) {
-            processedResultString = processedResultString.substring(1);
-        }
+        processedResultString = processedResultString.replaceAll("^\\s+", "");
         while (processedResultString.endsWith(",") || processedResultString.endsWith(" ") || processedResultString.endsWith(".")) {
             processedResultString = processedResultString.substring(0, processedResultString.length() - 1);
         }
@@ -596,7 +621,7 @@ public class GherkinGenerator implements Generator {
 
     private boolean childContainsPluralNoun(IndexedWord verb, CoreSentence sentence) {
         for (IndexedWord child : sentence.dependencyParse().getChildList(verb)) {
-            if (child.tag().startsWith("NN") && child.tag().endsWith("S") && !child.word().equalsIgnoreCase("details")) {
+            if (child.tag().startsWith("NN") && child.tag().endsWith("S") && !child.word().equalsIgnoreCase("details") && child.index() > verb.index()) {
                 return true;
             }
         }
@@ -605,7 +630,16 @@ public class GherkinGenerator implements Generator {
 
     private IndexedWord getInfinitiveToWord(CoreSentence sentence) {
         for (int i = 1; i < sentence.posTags().size(); i++){
-            if (sentence.posTags().get(i).equals("VB") &&sentence.posTags().get(i - 1).equals("TO")) {
+            if (sentence.posTags().get(i).equals("VB") && sentence.posTags().get(i - 1).equals("TO")) {
+                return sentence.dependencyParse().getNodeByIndex(i + 1);
+            }
+        }
+        return null;
+    }
+
+    private IndexedWord getInfinitiveToWordWithAdverb(CoreSentence sentence) {
+        for (int i = 2; i < sentence.posTags().size(); i++){
+            if (sentence.posTags().get(i).equals("VB") && sentence.posTags().get(i - 1).equals("RB") && sentence.posTags().get(i - 2).equals("TO")) {
                 return sentence.dependencyParse().getNodeByIndex(i + 1);
             }
         }
