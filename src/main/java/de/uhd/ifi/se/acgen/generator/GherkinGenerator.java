@@ -553,10 +553,10 @@ public class GherkinGenerator implements Generator {
         }
 
 
-        return Arrays.asList(new AcceptanceCriterion(postProcessingOfReasonString(resultString, sentence), AcceptanceCriterionType.RESULT));
+        return Arrays.asList(new AcceptanceCriterion(postProcessingOfResultString(resultString, sentence), AcceptanceCriterionType.RESULT));
     }
 
-    private String postProcessingOfReasonString(String resultString, CoreSentence sentence) throws TokenNotFoundException {
+    private String postProcessingOfResultString(String resultString, CoreSentence sentence) throws TokenNotFoundException {
         String processedResultString = resultString;
         IndexedWord verb = getVerb(sentence, true);
         IndexedWord firstWordAfterVerb = sentence.dependencyParse().getNodeByIndex(verb.index() + 1);

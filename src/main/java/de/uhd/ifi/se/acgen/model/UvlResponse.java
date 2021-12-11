@@ -27,7 +27,7 @@ public class UvlResponse {
         return this.toJson().toString();
     }
 
-    public int getACCountOfUS(int usNumber) {
+    private int getACCountOfUS(int usNumber) {
         try {
             JsonArray ACOfUS = this.us_ac.get(Integer.toString(usNumber)).getAsJsonArray();
             return ACOfUS.size();
