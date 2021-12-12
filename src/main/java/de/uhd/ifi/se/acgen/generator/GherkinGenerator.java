@@ -32,8 +32,10 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
  */
 public class GherkinGenerator implements Generator {
 
-    // Those words start a conditional sentence or denote a temporal relation
-    // between two actions, which can be used to derive actions.
+    /**
+     * A list of words which start a conditional sentence or denote a temporal
+     * relation between two actions, which can be used to derive actions.
+     */
     List<String> conditionalStarterStrings = Arrays.asList("if", "when", "once", "whenever", "after", "during");
 
     /**

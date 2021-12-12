@@ -62,8 +62,24 @@ public enum AcceptanceCriterionType {
      */
     DEBUG("", "DEBUG: ", "");
 
+    /**
+     * The Gherkin keyword for Gherkin acceptance criteria or the severity
+     * keyword of log messages.
+     */
     private String keyword;
+
+    /**
+     * A string that is part of every acceptance criterion of this type and
+     * comes directly before its individual content (the raw string of the
+     * {@code AcceptanceCriterion}.
+     */
     private String prefix;
+
+    /**
+     * A string that is part of every acceptance criterion of this type and
+     * comes directly after its individual content (the raw string of the
+     * {@code AcceptanceCriterion}.
+     */
     private String suffix;
 
     /**

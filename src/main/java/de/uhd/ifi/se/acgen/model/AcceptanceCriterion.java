@@ -9,9 +9,28 @@ package de.uhd.ifi.se.acgen.model;
  */
 public class AcceptanceCriterion implements Comparable<AcceptanceCriterion> {
 
+    /**
+     * The string of the acceptance criterion, not including keywords or text
+     * modules resulting from the type.
+     */
     String rawString;
+
+    /**
+     * The type of the acceptance criterion. Can be part of the Gherkin syntax
+     * or a log message.
+     */
     AcceptanceCriterionType type;
+
+    /** 
+     * The 1-based index of the first word the acceptance criterion is derived
+     * from
+     */
     int beginReplacementIndex;
+
+    /** 
+     * The 1-based index of the last word the acceptance criterion is derived
+     * from
+     */
     int endReplacementIndex;
     
     /**
@@ -19,9 +38,9 @@ public class AcceptanceCriterion implements Comparable<AcceptanceCriterion> {
      * range.
      * 
      * @param _rawString the string of the acceptance criterion, not including
-     * keywords or text modules resulting from the type.
+     * keywords or text modules resulting from the type
      * @param _type the type of the acceptance criterion. Can be part of the
-     * Gherkin syntax or a log message.
+     * Gherkin syntax or a log message
      * 
      * @see AcceptanceCriterionType
      */
@@ -38,9 +57,9 @@ public class AcceptanceCriterion implements Comparable<AcceptanceCriterion> {
      * first and last word in the dependency graph.
      * 
      * @param _rawString the string of the acceptance criterion, not including
-     * keywords or text modules resulting from the type.
+     * keywords or text modules resulting from the type
      * @param _type the type of the acceptance criterion. Can be part of the
-     * Gherkin syntax or a log message.
+     * Gherkin syntax or a log message
      * @param _beginReplacementIndex the 1-based index of the first word the
      * acceptance criterion is derived from
      * @param _endReplacementIndex the 1-based index of the last word the

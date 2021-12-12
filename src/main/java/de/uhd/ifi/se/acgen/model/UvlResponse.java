@@ -12,8 +12,19 @@ import com.google.gson.JsonObject;
  */
 public class UvlResponse {
     
+    /**
+     * A JSON object storing the acceptance criteria.
+     */
     JsonObject acceptanceCriteria;
+
+    /**
+     * A JSON object associating user stories with the acceptance criteria.
+     */
     JsonObject userStoryAcceptanceCriteriaIdMap;
+
+    /**
+     * A JSON object storing the computed metrics.
+     */
     JsonObject metrics;
 
     /**

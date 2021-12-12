@@ -23,11 +23,37 @@ import de.uhd.ifi.se.acgen.generator.Generator;
  */
 public class UserStory {
 
+    /**
+     * The role of the user story in the syntax “As a [role]”.
+     */
     String role;
+
+    /**
+     * The goal of the user story in the syntax “I want [goal]”.
+     */
     String goal;
+
+    /**
+     * The reason of the user story in the syntax “so that [reason]”.
+     */
     String reason;
+
+    /**
+     * {@code true} if a bullet point list or note was found during initial
+     * parsing.
+     */
     boolean containsListOrNote;
+
+    /**
+     * {@code true} if the user story was cut at a bullet point list or note
+     * during initial parsing.
+     */
     boolean wasCutAtListOrNote;
+
+    /**
+     * A map that stores the generated acceptance criteria and associates it to
+     * the respective generator class.
+     */
     Map<String, List<AcceptanceCriterion>> acceptanceCriteria;
 
     /**
