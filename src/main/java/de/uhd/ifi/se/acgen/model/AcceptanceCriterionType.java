@@ -7,15 +7,59 @@ package de.uhd.ifi.se.acgen.model;
  */
 public enum AcceptanceCriterionType {
     
+    /**
+     * A role precondition acceptance criterion type of the format “GIVEN
+     * [role] is using the software”
+     */
     ROLE("GIVEN", "", " is using the software"),
+
+    /**
+     * A UI precondition acceptance criterion type of the format “GIVEN the
+     * active user interface is [UI description]”.
+     */
     UI("GIVEN", "the active user interface is ", ""),
+
+    /**
+     * An action acceptance criterion of the format “WHEN [action]”.
+     */
     ACTION("WHEN", "", ""),
+
+    /**
+     * An expected result acceptance criterion of the format “THEN [expected
+     * result]”
+     */
     RESULT("THEN", "", ""),
+
+    /**
+     * An action acceptance criterion of the format “WHEN [action]”, derived
+     * from the reason of a user story.
+     */
     ACTION_IN_REASON("WHEN", "", ""),
+
+    /**
+     * An expected result acceptance criterion of the format “THEN [expected
+     * result]”, derived from the reason of a user story.
+     */
     RESULT_IN_REASON("THEN", "", ""),
+
+    /**
+     * An error log message.
+     */
     ERROR("", "ERROR: ", ""),
+
+    /**
+     * A warning log message.
+     */
     WARNING("", "WARNING: ", ""),
+
+    /**
+     * An info log message.
+     */
     INFO("", "INFO: ", ""),
+
+    /**
+     * A debug log message.
+     */
     DEBUG("", "DEBUG: ", "");
 
     private String keyword;

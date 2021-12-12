@@ -11,7 +11,7 @@ import static spark.Spark.*;
  * 
  * @see RunRest
  * @see StatusRest
- * @see https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml
+ * @see <a href="https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml">https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml</a>
  * for the API documentation
  */
 public class App {

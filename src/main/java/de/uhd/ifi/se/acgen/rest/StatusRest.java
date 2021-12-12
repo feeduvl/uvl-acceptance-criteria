@@ -9,7 +9,7 @@ import spark.Response;
  * The /status API endpoint class which handles requests to the /status
  * endpoint.
  * 
- * @see https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml
+ * @see <a href="https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml">https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml</a>
  * for the API documentation
  */
 public class StatusRest {

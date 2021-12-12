@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
  * Stores the payload of the HTTP response, including acceptance criteria and
  * metrics, in the syntax required by the Feed UVL API.
  * 
- * @see https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml
+ * @see <a href="https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml">https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml</a>
  * for the API documentation
  */
 public class UvlResponse {
@@ -33,7 +33,7 @@ public class UvlResponse {
      * 
      * @return a JSON object containing all member variables
      * 
-     * @see https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml
+ * @see <a href="https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml">https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml</a>
      * for the API documentation
      */
     public JsonObject toJson() {

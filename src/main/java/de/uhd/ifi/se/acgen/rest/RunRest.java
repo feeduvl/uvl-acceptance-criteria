@@ -18,7 +18,7 @@ import spark.Response;
 /**
  * The /run API endpoint class which handles requests to the /run endpoint and
  * starts the acceptance criteria generation process.
- * @see https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml
+ * @see <a href="https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml">https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml</a>
  * for the API documentation
  */
 public class RunRest {
@@ -35,7 +35,7 @@ public class RunRest {
      * messages and metrics in the syntax required by the FeedUVL API.
      * 
      * @see UvlResponse
-     * @see https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml
+     * @see <a href="https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml">https://github.com/feeduvl/uvl-acceptance-criteria/blob/main/swagger.yaml</a>
      * for the API documentation
      */
     public static UvlResponse addAcceptanceCriteriaToResponse(JsonArray documents, boolean debug) {

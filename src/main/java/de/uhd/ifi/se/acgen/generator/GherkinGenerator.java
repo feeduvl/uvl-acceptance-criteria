@@ -366,7 +366,7 @@ public class GherkinGenerator implements Generator {
      * @see GherkinGenerator#addSToVerbOfSubject
      * @see GherkinGenerator#identifyVerb
      * @see GherkinGenerator#postProcessingOfResultString
-     * @see https://www.gymglish.com/en/gymglish/english-grammar/the-s-in-the-third-person-singular-form
+     * @see <a href="https://www.gymglish.com/en/gymglish/english-grammar/the-s-in-the-third-person-singular-form">https://www.gymglish.com/en/gymglish/english-grammar/the-s-in-the-third-person-singular-form</a>
      * for the rules implemented in this method
      */
     private String heSheItDasSMussMit(String verb) {
