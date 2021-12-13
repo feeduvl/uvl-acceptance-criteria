@@ -9,10 +9,11 @@
         ]
     },
     {
-        "userStory": "As a developer, I want to see an error message whenever an error occurs, so that I can track the error.",
+        "userStory": "As a developer, I want to see an error message whenever an error occurs if the error is severe, so that I can track the error.",
         "acceptanceCriteria": [
             "GIVEN a developer is using the software",
             "WHEN an error occurs",
+            "WHEN the error is severe",
             "THEN the user sees an error message"
         ]
     },
@@ -27,11 +28,42 @@
         ]
     },
     {
+        "userStory": "As another tester, I want tests to not be shown in the TestCockpit, so that I have to do less work.",
+        "acceptanceCriteria": [
+            "GIVEN another tester is using the software",
+            "GIVEN the active user interface is the TestCockpit",
+            "THEN tests are not shown in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a third tester, I want CoMET to explicitly show the tests in the test cockpit, so that I can do the other tester’s work more efficiently.",
+        "acceptanceCriteria": [
+            "GIVEN a third tester is using the software",
+            "GIVEN the active user interface is the test cockpit",
+            "THEN CoMET explicitly shows the tests in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a fourth tester, I want many CoMETs to explicitly show the tests in the test cockpit, so that I have multiple CoMETs – how fancy.",
+        "acceptanceCriteria": [
+            "GIVEN a fourth tester is using the software",
+            "GIVEN the active user interface is the test cockpit",
+            "THEN many CoMETs explicitly show the tests in the active user interface"
+        ]
+    },
+    {
         "userStory": "As an importer, I want to have an icon in the import view for importing things.",
         "acceptanceCriteria": [
             "GIVEN an importer is using the software",
             "GIVEN the active user interface is the import view",
             "THEN the user has an icon in the active user interface for importing things"
+        ]
+    },
+    {
+        "userStory": "As a UX designer, I want a design view so that I can view my designs.",
+        "acceptanceCriteria": [
+            "GIVEN a UX designer is using the software",
+            "THEN the user is provided with a design view"
         ]
     }
 ]
