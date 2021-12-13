@@ -104,7 +104,7 @@ public class UIPreconditionUtils {
                     // part of the UI description, as in “the view "List
                     // Registrations"”.
                     endIndex = i + 2 + tokensAsStrings.subList(i + 1, tokensAsStrings.size()).indexOf("\"");
-                } else if (tokensAsStrings.get(i).equals(">") && (posTags.get(i - 1).equals("HYPH") || tokensAsStrings.get(i - 1).equals("-"))) {
+                } else if (tokensAsStrings.get(i).equals(">") && tokensAsStrings.get(i - 1).equals("-")) {
                     // If the current token is “>” and the previous token is a
                     // hyphen, we have not reached the end of the UI
                     // description, since the arrow “->” points to another UI

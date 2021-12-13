@@ -135,11 +135,43 @@
         ]
     },
     {
+        "userStory": "As a user I want that in the view \"Calculator\" > and < characters denote the relations “smaller than” and ”greater than”.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the view \"Calculator\"",
+            "THEN in the active user interface > and < characters denote the relations “smaller than” and ”greater than”"
+        ]
+    },
+    {
         "userStory": "As a user I want to be in the event details in the view \"Details\" (nice!).",
         "acceptanceCriteria": [
             "GIVEN a user is using the software",
             "GIVEN the active user interface is the event details in the view \"Details\"",
             "THEN the user is in the active user interface (nice!)"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details in the view \"Details.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details in the view",
+            "THEN the user is in the active user interface \"Details"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details in the view \"Developer Days\" (ET.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details in the view \"Developer Days\"",
+            "THEN the user is in the active user interface (ET"
+        ]
+    },
+    {
+        "userStory": "As a user I want to have something in the view \"in CoMET\".",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the view \"in CoMET\"",
+            "THEN the user has something in the active user interface"
         ]
     }
 ]
