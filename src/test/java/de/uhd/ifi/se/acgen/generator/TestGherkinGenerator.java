@@ -18,6 +18,7 @@ import com.google.gson.stream.JsonReader;
 import org.junit.jupiter.api.Test;
 
 import de.uhd.ifi.se.acgen.exception.TokenNotFoundException;
+import de.uhd.ifi.se.acgen.generator.gherkin.GherkinGenerator;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterionType;
 import de.uhd.ifi.se.acgen.model.UserStory;

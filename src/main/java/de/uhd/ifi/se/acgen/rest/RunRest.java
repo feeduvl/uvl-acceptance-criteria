@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import de.uhd.ifi.se.acgen.generator.GherkinGenerator;
+import de.uhd.ifi.se.acgen.generator.gherkin.GherkinGenerator;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterionType;
 import de.uhd.ifi.se.acgen.model.UserStory;
