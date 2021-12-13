@@ -13,6 +13,13 @@ import edu.stanford.nlp.pipeline.CoreSentence;
 public class SharedUtils {
 
     /**
+     * The private constructor of the utility class, preventing instantiation.
+     */
+    private SharedUtils() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
      * A list of words which start a conditional sentence or denote a temporal
      * relation between two actions, which can be used to derive actions.
      */

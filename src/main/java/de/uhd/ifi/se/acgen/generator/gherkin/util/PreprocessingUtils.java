@@ -19,7 +19,14 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 /**
  * Provides various utility functions for preprocessing of a user story.
  */
-public class PreprocessingUtils {
+public final class PreprocessingUtils {
+
+    /**
+     * The private constructor of the utility class, preventing instantiation.
+     */
+    private PreprocessingUtils() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 
     /**
      * Converts a given sentence to third person.

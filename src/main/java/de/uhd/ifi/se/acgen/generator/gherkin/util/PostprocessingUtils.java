@@ -9,6 +9,13 @@ import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
 public class PostprocessingUtils {
     
     /**
+     * The private constructor of the utility class, preventing instantiation.
+     */
+    private PostprocessingUtils() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
      * Creates an acceptance criterion which contains information from one
      * acceptance criterion and does not contain information from another
      * acceptance criterion, i.e., remove all information contained in the

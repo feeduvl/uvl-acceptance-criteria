@@ -9,6 +9,14 @@ import edu.stanford.nlp.pipeline.CoreSentence;
  * acceptance criteria.
  */
 public class ResultUtils {
+
+    /**
+     * The private constructor of the utility class, preventing instantiation.
+     */
+    private ResultUtils() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     /**
      * Postprocesses the expected result string to contain only the information
      * not included in other acceptance criteria in a grammatically correct
@@ -230,7 +238,7 @@ public class ResultUtils {
         sanitizedResultString = sanitizedResultString.replaceAll("^\\s+", "");
 
         // Remove whitespaces, commas and sentence periods at the end
-        while (sanitizedResultString.endsWith(",") || sanitizedResultString.endsWith(" ") || sanitizedResultString.endsWith(".")) {
+        while (sanitizedResultString.endsWith(",") || sanitizedResultString.endsWith(" ") || sanitizedResultString.endsWith(".") || sanitizedResultString.endsWith("-")) {
             sanitizedResultString = sanitizedResultString.substring(0, sanitizedResultString.length() - 1);
         }
         return sanitizedResultString;

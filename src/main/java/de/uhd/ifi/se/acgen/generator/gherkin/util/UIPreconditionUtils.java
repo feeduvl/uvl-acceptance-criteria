@@ -12,6 +12,13 @@ import edu.stanford.nlp.pipeline.CoreSentence;
 public class UIPreconditionUtils {
 
     /**
+     * The private constructor of the utility class, preventing instantiation.
+     */
+    private UIPreconditionUtils() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
      * Determines the 0-based index of the last word of a UI description.
      * 
      * @param beginIndex the 0-based index of the first word of a UI

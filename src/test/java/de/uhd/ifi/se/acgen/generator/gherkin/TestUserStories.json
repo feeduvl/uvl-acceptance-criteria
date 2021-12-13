@@ -1,0 +1,145 @@
+[
+    {
+        "userStory": "As a person interested in details, I want to be able to click on a button in the list view of the object cockpit to see the details, so that I can view the details of an object.",
+        "acceptanceCriteria": [
+            "GIVEN a person interested in details is using the software",
+            "GIVEN the active user interface is the list view of the object cockpit",
+            "WHEN the user clicks on a button in the active user interface",
+            "THEN the user is able to see the details"
+        ]
+    },
+    {
+        "userStory": "As a developer, I want to see an error message whenever an error occurs if the error is severe, so that I can track the error.",
+        "acceptanceCriteria": [
+            "GIVEN a developer is using the software",
+            "WHEN an error occurs",
+            "WHEN the error is severe",
+            "THEN the user sees an error message"
+        ]
+    },
+    {
+        "userStory": "As a tester, I want tests to be shown in the TestCockpit, so that when developers write tests, the tests are shown to me in the TestCockpit.",
+        "acceptanceCriteria": [
+            "GIVEN a tester is using the software",
+            "GIVEN the active user interface is the TestCockpit",
+            "THEN tests are shown in the active user interface",
+            "WHEN developers write tests",
+            "THEN the tests are shown to the user in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As another tester, I want tests to not be shown in the TestCockpit - so that I have to do less work.",
+        "acceptanceCriteria": [
+            "GIVEN another tester is using the software",
+            "GIVEN the active user interface is the TestCockpit",
+            "THEN tests are not shown in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a third tester, I want CoMET to explicitly show the tests in the test cockpit, so that I can do the other tester’s work more efficiently.",
+        "acceptanceCriteria": [
+            "GIVEN a third tester is using the software",
+            "GIVEN the active user interface is the test cockpit",
+            "THEN CoMET explicitly shows the tests in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a fourth tester, I want many CoMETs to explicitly show the tests in the test cockpit, so that I have multiple CoMETs – how fancy.",
+        "acceptanceCriteria": [
+            "GIVEN a fourth tester is using the software",
+            "GIVEN the active user interface is the test cockpit",
+            "THEN many CoMETs explicitly show the tests in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As an importer, I want to have an icon in the import view for importing things.",
+        "acceptanceCriteria": [
+            "GIVEN an importer is using the software",
+            "GIVEN the active user interface is the import view",
+            "THEN the user has an icon in the active user interface for importing things"
+        ]
+    },
+    {
+        "userStory": "As a UX designer, I want a design view so that I can view my designs.",
+        "acceptanceCriteria": [
+            "GIVEN a UX designer is using the software",
+            "THEN the user is provided with a design view"
+        ]
+    },
+    {
+        "userStory": "As a UX designer, I want a design view so I can view my designs.",
+        "acceptanceCriteria": [
+            "GIVEN a UX designer is using the software",
+            "THEN the user is provided with a design view so the user can view the user’s designs"
+        ]
+    },
+    {
+        "userStory": "As a UX designer interested in the user interface design, I want a design view",
+        "acceptanceCriteria": [
+            "GIVEN a UX designer interested in the user interface design is using the software",
+            "THEN the user is provided with a design view"
+        ]
+    },
+    {
+        "userStory": "As a student, I want a reverse button as soon as I delete information, so that I don’t lose information.",
+        "acceptanceCriteria": [
+            "GIVEN a student is using the software",
+            "WHEN the user deletes information",
+            "THEN the user is provided with a reverse button"
+        ]
+    },
+    {
+        "userStory": "As a user, I want to know as soon as and where I saved my file",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user knows as soon as and where the user saved the user’s file"
+        ]
+    },
+    {
+        "userStory": "As a user, I want to know even if and where I saved my file, so that I am able to find it later.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user knows even if and where the user saved the user’s file"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details of an event in the list Event Stuff, so that I can see the event details.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details of an event in the list Event Stuff",
+            "THEN the user is in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details for an event in CoMET, so that I can see the event details.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details for an event in CoMET",
+            "THEN the user is in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details under detailing.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details",
+            "THEN the user is in the active user interface under detailing"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details in the view \"Developer Days\" (ET) -> Details.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details in the view \"Developer Days\" (ET) -> Details",
+            "THEN the user is in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be in the event details in the view \"Details\" (nice!).",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the event details in the view \"Details\"",
+            "THEN the user is in the active user interface (nice!)"
+        ]
+    }
+]

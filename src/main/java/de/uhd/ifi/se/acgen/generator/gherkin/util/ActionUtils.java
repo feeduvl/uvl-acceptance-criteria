@@ -16,6 +16,13 @@ import edu.stanford.nlp.pipeline.CoreSentence;
 public class ActionUtils {
 
     /**
+     * The private constructor of the utility class, preventing instantiation.
+     */
+    private ActionUtils() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
      * Checks whether the expression “as soon as” is present at the specified
      * position in the given sentence. The 1-based index must point at the
      * second “as”.

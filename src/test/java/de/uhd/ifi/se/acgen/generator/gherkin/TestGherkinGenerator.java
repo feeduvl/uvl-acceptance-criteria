@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.acgen.generator;
+package de.uhd.ifi.se.acgen.generator.gherkin;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +18,6 @@ import com.google.gson.stream.JsonReader;
 import org.junit.jupiter.api.Test;
 
 import de.uhd.ifi.se.acgen.exception.TokenNotFoundException;
-import de.uhd.ifi.se.acgen.generator.gherkin.GherkinGenerator;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterionType;
 import de.uhd.ifi.se.acgen.model.UserStory;
@@ -30,7 +29,7 @@ public class TestGherkinGenerator {
         assertDoesNotThrow(() -> {
             Gson gson = new Gson();
             JsonReader reader;
-            reader = new JsonReader(new FileReader("src/test/java/de/uhd/ifi/se/acgen/generator/TestUserStories.json"));
+            reader = new JsonReader(new FileReader("src/test/java/de/uhd/ifi/se/acgen/generator/gherkin/TestUserStories.json"));
             JsonArray userStories = gson.fromJson(reader, JsonArray.class);
             for (JsonElement userStoryElement : userStories) {
                 String userStoryString = ((JsonObject) userStoryElement).get("userStory").getAsString();

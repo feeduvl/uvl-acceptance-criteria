@@ -147,9 +147,6 @@ public class GherkinGenerator implements Generator {
             } else if (word.word().equalsIgnoreCase("the") && word.tag().equals("DT")) {
                 // …“the” is a determiner, just to make sure we found the right
                 // words
-                if (wordsInUserStorySentence.size() < word.index() + 2) {
-                    continue;
-                }
 
                 // after the determiner “the”, we expect the words “user”, a
                 // singular noun (NN), and “wants”, a third-person singular
@@ -166,29 +163,21 @@ public class GherkinGenerator implements Generator {
             }
         }
 
-        if (indexAs == Integer.MAX_VALUE || indexTheUserWants == 0) {
-            // If one part could not be identified, we cannot continue with
-            // identifying a role precondition acceptance criterion. This
-            // should not happen, so we add a warning message to the acceptance
-            // criteria list.
-            acceptanceCriteria.add(new AcceptanceCriterion("The role of the user story could not be identified.", AcceptanceCriterionType.WARNING));
-        } else {
-            // If both parts were identified, we determine the 1-based indices
-            // of the first word after “As a” and the last word before the “the
-            // user wants”, which should correspond to the role specification
-            // in the user story, and then retrieve the begin and end position
-            // of these words in the user story string.
-            int beginPosition = sentence.dependencyParse().getNodeByIndex(indexAs + 1).beginPosition();
-            int endPosition = sentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).endPosition();
+        // If both parts were identified, we determine the 1-based indices
+        // of the first word after “As a” and the last word before the “the
+        // user wants”, which should correspond to the role specification
+        // in the user story, and then retrieve the begin and end position
+        // of these words in the user story string.
+        int beginPosition = sentence.dependencyParse().getNodeByIndex(indexAs + 1).beginPosition();
+        int endPosition = sentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).endPosition();
 
-            // If the role specification ends with a comma (e.g. “As a
-            // developer, the user wants…”), we exclude it.
-            //          ^
-            if (sentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).tag().equals(",")) {
-                endPosition = sentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1 - 1).endPosition();
-            }
-            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.ROLE, indexAs, indexTheUserWants - 1));
+        // If the role specification ends with a comma (e.g. “As a
+        // developer, the user wants…”), we exclude it.
+        //          ^
+        if (sentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1).tag().equals(",")) {
+            endPosition = sentence.dependencyParse().getNodeByIndex(indexTheUserWants - 1 - 1).endPosition();
         }
+        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.ROLE, indexAs, indexTheUserWants - 1));
 
         return acceptanceCriteria;
     }
@@ -240,12 +229,6 @@ public class GherkinGenerator implements Generator {
 
         // We now need to find the end of the user interface description.
         int endIndex = UIPreconditionUtils.getEndIndexOfUI(beginIndex, sentence);
-        if (endIndex == 0 || endIndex == nerTags.size()) {
-            // If no end has been found or the presumed end is a word after the
-            // last word of the user story, the UI description ends at the last
-            // word of the user story.
-            endIndex = nerTags.size() - 1;
-        }
         if (posTags.get(endIndex).equals(",") || posTags.get(endIndex).equals("HYPH")) {
             // If the UI description ends with a comma or a hyphen, we remove
             // this last token
@@ -392,11 +375,6 @@ public class GherkinGenerator implements Generator {
                 // user story which was already cut off, we can safely ignore it
                 continue;
             }
-            if (endReplacementPosition > resultString.length()) {
-                // if the replacement would replace the end of the current
-                // string, the end position is adjusted accordingly
-                endReplacementPosition = resultString.length();
-            }
 
             // Replace all characters between the begin and end position with
             // whitespaces, thereby retaining all other character positions for
@@ -429,9 +407,7 @@ public class GherkinGenerator implements Generator {
                 case UI:
                     // If the acceptance criterion is a UI precondition, we
                     // store the UI description string
-                    if (uiDescription == null) {
-                        uiDescription = acceptanceCriteria.get(i).getRawString();
-                    }
+                    uiDescription = acceptanceCriteria.get(i).getRawString();
                     resolvedAcceptanceCriteria.add(acceptanceCriteria.get(i));
                     break;
 
