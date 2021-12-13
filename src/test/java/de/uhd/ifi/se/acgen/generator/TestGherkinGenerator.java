@@ -2,6 +2,7 @@ package de.uhd.ifi.se.acgen.generator;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.FileReader;
@@ -63,6 +64,17 @@ public class TestGherkinGenerator {
         assertEquals("The subject of the user story could not be identified.", noSubjectException.getMessage());
         TokenNotFoundException noVerbException = assertThrows(TokenNotFoundException.class, () -> new UserStory(userStoryStringNoVerb).getAcceptanceCriteria(new GherkinGenerator(), false));
         assertEquals("The verb of the user story could not be identified.", noVerbException.getMessage());
+    }
+
+    @Test
+    public void testReusingAcceptanceCriteria() {
+        assertDoesNotThrow(() -> {
+            String userStoryString = "As a user I want to sleep so that I am no longer tired";
+            UserStory userStory = new UserStory(userStoryString);
+            List<AcceptanceCriterion> acceptanceCriteriaFirst = userStory.getAcceptanceCriteria(new GherkinGenerator(), false);
+            List<AcceptanceCriterion> acceptanceCriteriaSecond = userStory.getAcceptanceCriteria(new GherkinGenerator(), false);
+            assertSame(acceptanceCriteriaFirst, acceptanceCriteriaSecond);
+        });
     }
 
 }

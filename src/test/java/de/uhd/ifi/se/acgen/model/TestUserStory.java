@@ -20,8 +20,6 @@ public class TestUserStory {
 
     @Test
     public void testRoleOnlyUserStory() {
-
-        
         NoUserStoryException e = assertThrows(NoUserStoryException.class, () -> new UserStory("As a developer I wrote a crappy user story for this test to fail."));
         assertEquals("A goal could not be found. Please make sure the goal of the user story is declared after the role using the syntax \"I want [goal]\".", e.getMessage());
     }
