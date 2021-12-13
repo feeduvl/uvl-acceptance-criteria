@@ -272,7 +272,7 @@ public class ActionUtils {
      * @param userStoryString a string containing the user story
      * @param endIndexOfAction the 1-based index of the last word of the
      * preceeding action
-     * @return a list of zero or one expected result acceptance criteria
+     * @return a list of one expected result acceptance criteria
      * 
      * @see ActionUtils#extractActionFromConditionalStarterWord
      */
@@ -296,15 +296,13 @@ public class ActionUtils {
             endIndex -= 1;
         }
 
-        if (beginIndex <= endIndex) {
-            // If there are words left after the end of the action, we
-            // determine the 1-based indices of the first and last words and
-            // then retrieve the begin and end position of these words in the
-            // user story string. 
-            int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
-            int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
-            acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.RESULT_IN_REASON, endIndexOfAction + 1, wordsInSentenceCount));
-        }
+        // If there are words left after the end of the action, we
+        // determine the 1-based indices of the first and last words and
+        // then retrieve the begin and end position of these words in the
+        // user story string. 
+        int beginPosition = sentence.dependencyParse().getNodeByIndex(beginIndex).beginPosition();
+        int endPosition = sentence.dependencyParse().getNodeByIndex(endIndex).endPosition();
+        acceptanceCriteria.add(new AcceptanceCriterion(userStoryString.substring(beginPosition, endPosition), AcceptanceCriterionType.RESULT_IN_REASON, endIndexOfAction + 1, wordsInSentenceCount));
         return acceptanceCriteria;
     }
 
@@ -359,7 +357,7 @@ public class ActionUtils {
             int endIndex = getIndexFromPosition(sentence, endPosition + " and".length(), false);
 
             // Remove commas and spaces from the end of the action
-            while (acceptanceCriterionString.endsWith(",") || acceptanceCriterionString.endsWith(" ")) {
+            while (acceptanceCriterionString.endsWith(",")) {
                 acceptanceCriterionString = acceptanceCriterionString.substring(0, acceptanceCriterionString.length() - 1);
             }
 

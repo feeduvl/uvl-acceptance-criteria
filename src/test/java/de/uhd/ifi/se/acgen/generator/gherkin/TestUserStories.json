@@ -143,7 +143,7 @@
         ]
     },
     {
-        "userStory": "As a user I want to be in the event details in the view \"Details\" (nice!).",
+        "userStory": "As a user I want to be in the event details in the view \"Details\" (nice!)",
         "acceptanceCriteria": [
             "GIVEN a user is using the software",
             "GIVEN the active user interface is the event details in the view \"Details\"",
@@ -167,11 +167,161 @@
         ]
     },
     {
-        "userStory": "As a user I want to have something in the view \"in CoMET\".",
+        "userStory": "As a user I want to have something in the view \"in CoMET\" soon as something else happens.",
         "acceptanceCriteria": [
             "GIVEN a user is using the software",
             "GIVEN the active user interface is the view \"in CoMET\"",
-            "THEN the user has something in the active user interface"
+            "THEN the user has something in the active user interface soon as something else happens"
+        ]
+    },
+    {
+        "userStory": "As a user I want to do something – if necessary after something else",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user does something – if necessary after something else"
+        ]
+    },
+    {
+        "userStory": "As a telephone operator I want to call the event participants not indirectly, but directly after the event.",
+        "acceptanceCriteria": [
+            "GIVEN a telephone operator is using the software",
+            "WHEN the event happens",
+            "THEN the user calls the event participants not indirectly, but directly"
+        ]
+    },
+    {
+        "userStory": "As a participant I want to receive an email one week after an event.",
+        "acceptanceCriteria": [
+            "GIVEN a participant is using the software",
+            "WHEN one week passed after an event happens",
+            "THEN the user receives an email"
+        ]
+    },
+    {
+        "userStory": "As a participant I want to receive an email after an event\n* was good and\n* was successful",
+        "acceptanceCriteria": [
+            "GIVEN a participant is using the software",
+            "WHEN an event […]",
+            "THEN the user receives an email"
+        ]
+    },
+    {
+        "userStory": "As a participant I want to receive an email one week after an event (which I enjoyed).",
+        "acceptanceCriteria": [
+            "GIVEN a participant is using the software",
+            "WHEN one week passed after an event (which the user enjoyed)",
+            "THEN the user receives an email"
+        ]
+    },
+    {
+        "userStory": "As a participant I want to receive an email one week after an event (that I enjoyed).",
+        "acceptanceCriteria": [
+            "GIVEN a participant is using the software",
+            "WHEN one week passed after an event (that the user enjoyed) happens",
+            "THEN the user receives an email"
+        ]
+    },
+    {
+        "userStory": "As a sick person, I want to be informed when creating a new sick note that I was already sick for the last working day.",
+        "acceptanceCriteria": [
+            "GIVEN a sick person is using the software",
+            "WHEN creating a new sick note",
+            "THEN the user is informed that the user was already sick for the last working day"
+        ]
+    },
+    {
+        "userStory": "As a sick person, I want to be informed when creating a new sick note that contains information regarding my sickness, that I was already sick for the last working day.",
+        "acceptanceCriteria": [
+            "GIVEN a sick person is using the software",
+            "WHEN creating a new sick note that contains information regarding the user’s sickness",
+            "THEN the user is informed that the user was already sick for the last working day"
+        ]
+    },
+    {
+        "userStory": "As a participant I want to receive an email one week after an event (that I enjoyed, yeah).",
+        "acceptanceCriteria": [
+            "GIVEN a participant is using the software",
+            "WHEN one week passed after an event (that the user enjoyed, yeah) happens",
+            "THEN the user receives an email"
+        ]
+    },
+    {
+        "userStory": "As a participant I want, when I attend an event, to receive an email afterwards.",
+        "acceptanceCriteria": [
+            "GIVEN a participant is using the software",
+            "WHEN the user attends an event",
+            "THEN the user receives an email afterwards"
+        ]
+    },
+    {
+        "userStory": "As an exporteur I want to see the export as soon as I made an export (either the \"normal\" one or the extended one for all interested people).",
+        "acceptanceCriteria": [
+            "GIVEN an exporteur is using the software",
+            "WHEN the user made an export (either the \"normal\" one or the extended one for all interested people)",
+            "THEN the user sees the export"
+        ]
+    },
+    {
+        "userStory": "As a user I want to do B when I do A, so that I do both.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "WHEN the user does A",
+            "THEN the user does B"
+        ]
+    },
+    {
+        "userStory": "As a user I want to forget something in the reason so that when I am in the reason",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user forgets something in the reason"
+        ]
+    },
+    {
+        "userStory": "As a user I want to do something so that when there is no sentence period, the coverage increases",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user does something",
+            "WHEN there is no sentence period",
+            "THEN the coverage increases"
+        ]
+    },
+    {
+        "userStory": "As a user I want to click somewhere (if possible)",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user clicks somewhere (if possible)"
+        ]
+    },
+    {
+        "userStory": "As a user I want to click somewhere if necessary",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user clicks somewhere if necessary"
+        ]
+    },
+    {
+        "userStory": "As a user I want to be able to click on A in the D view, to do B and also C.",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the D view",
+            "WHEN the user clicks on A in the active user interface",
+            "THEN the user is able to do B and also C"
+        ]
+    },
+    {
+        "userStory": "As a manager I want the interface to be read once a day.",
+        "acceptanceCriteria": [
+            "GIVEN a manager is using the software",
+            "THEN the interface is read once a day"
+        ]
+    },
+    {
+        "userStory": "As a sportive teamplayer I want you and other people to collaboratively jump in the air so that when you jump other people jump as well.",
+        "acceptanceCriteria": [
+            "GIVEN a sportive teamplayer is using the software",
+            "THEN you and other people collaboratively jump in the air",
+            "WHEN you jump",
+            "THEN other people jump as well"
         ]
     }
 ]
