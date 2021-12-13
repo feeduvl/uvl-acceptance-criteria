@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.acgen.rest;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonArray;
@@ -17,7 +18,7 @@ import de.uhd.ifi.se.acgen.rest.util.TestHttpResponseHelper;
 public class TestRunRest extends TestApp {
 
     @Test
-    public void testRunSuccessful() throws Exception {
+    public void testRunSuccessful() {
         JsonObject jsonRequest = new JsonObject();
         jsonRequest.addProperty("method", "acceptance-criteria");
         JsonObject params = new JsonObject();
@@ -40,28 +41,31 @@ public class TestRunRest extends TestApp {
         dataset.add("documents", documents);
         jsonRequest.add("dataset", dataset);
 
-        HttpPost request = new HttpPost(baseUrl + "run");
-        StringEntity entity = new StringEntity(jsonRequest.toString());
-        request.setEntity(entity);
-        request.setHeader("Accept", "application/json");
-        request.setHeader("Content-type", "application/json");
-        HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
-
-        assertTrue(TestHttpResponseHelper.testStatusOKAndContentJSON(httpResponse));
+        assertDoesNotThrow(() -> {
+            HttpPost request = new HttpPost(baseUrl + "run");
+            StringEntity entity = new StringEntity(jsonRequest.toString());
+            request.setEntity(entity);
+            request.setHeader("Accept", "application/json");
+            request.setHeader("Content-type", "application/json");
+            HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+            assertTrue(TestHttpResponseHelper.testStatusOKAndContentJSON(httpResponse));
+        });
     }
 
     @Test
-    public void testRunServerError() throws Exception {
+    public void testRunServerError() {
         JsonObject jsonRequest = new JsonObject();
         jsonRequest.addProperty("method", "acceptance-criteria");
+        
+        assertDoesNotThrow(() -> {
+            HttpPost request = new HttpPost(baseUrl + "run");
+            StringEntity entity = new StringEntity(jsonRequest.toString());
+            request.setEntity(entity);
+            request.setHeader("Accept", "application/json");
+            request.setHeader("Content-type", "application/json");
+            HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
 
-        HttpPost request = new HttpPost(baseUrl + "run");
-        StringEntity entity = new StringEntity(jsonRequest.toString());
-        request.setEntity(entity);
-        request.setHeader("Accept", "application/json");
-        request.setHeader("Content-type", "application/json");
-        HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
-
-        assertTrue(TestHttpResponseHelper.testStatusServerError(httpResponse));
+            assertTrue(TestHttpResponseHelper.testStatusServerError(httpResponse));
+        });
     }
 }

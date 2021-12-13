@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.acgen.rest;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,13 +20,16 @@ import de.uhd.ifi.se.acgen.rest.util.TestHttpResponseHelper;
 public class TestStatusRest extends TestApp {
 
     @Test
-    public void testStatus() throws Exception {
-        HttpUriRequest request = new HttpGet(baseUrl + "status");
-        HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+    public void testStatus() {
+        assertDoesNotThrow(() -> {
 
-        assertTrue(TestHttpResponseHelper.testStatusOKAndContentJSON(httpResponse));
-        JsonObject expectedResponseBody = new JsonObject();
-        expectedResponseBody.addProperty("status", "operational");
-        assertEquals(expectedResponseBody, new Gson().fromJson(EntityUtils.toString(httpResponse.getEntity()), JsonObject.class));
+            HttpUriRequest request = new HttpGet(baseUrl + "status");
+            HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+
+            assertTrue(TestHttpResponseHelper.testStatusOKAndContentJSON(httpResponse));
+            JsonObject expectedResponseBody = new JsonObject();
+            expectedResponseBody.addProperty("status", "operational");
+            assertEquals(expectedResponseBody, new Gson().fromJson(EntityUtils.toString(httpResponse.getEntity()), JsonObject.class));
+        });
     }
 }

@@ -1,0 +1,37 @@
+[
+    {
+        "userStory": "As a person interested in details, I want to be able to click on a button in the list view of the object cockpit to see the details, so that I can view the details of an object.",
+        "acceptanceCriteria": [
+            "GIVEN a person interested in details is using the software",
+            "GIVEN the active user interface is the list view of the object cockpit",
+            "WHEN the user clicks on a button in the active user interface",
+            "THEN the user is able to see the details"
+        ]
+    },
+    {
+        "userStory": "As a developer, I want to see an error message whenever an error occurs, so that I can track the error.",
+        "acceptanceCriteria": [
+            "GIVEN a developer is using the software",
+            "WHEN an error occurs",
+            "THEN the user sees an error message"
+        ]
+    },
+    {
+        "userStory": "As a tester, I want tests to be shown in the TestCockpit, so that when developers write tests, the tests are shown to me in the TestCockpit.",
+        "acceptanceCriteria": [
+            "GIVEN a tester is using the software",
+            "GIVEN the active user interface is the TestCockpit",
+            "THEN tests are shown in the active user interface",
+            "WHEN developers write tests",
+            "THEN the tests are shown to the user in the active user interface"
+        ]
+    },
+    {
+        "userStory": "As an importer, I want to have an icon in the import view for importing things.",
+        "acceptanceCriteria": [
+            "GIVEN an importer is using the software",
+            "GIVEN the active user interface is the import view",
+            "THEN the user has an icon in the active user interface for importing things"
+        ]
+    }
+]
