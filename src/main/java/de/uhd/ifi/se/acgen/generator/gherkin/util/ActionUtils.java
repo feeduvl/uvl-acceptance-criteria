@@ -19,7 +19,7 @@ public class ActionUtils {
      * The private constructor of the utility class, preventing instantiation.
      */
     private ActionUtils() {
-        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     /**
