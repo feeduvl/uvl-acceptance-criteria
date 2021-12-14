@@ -309,6 +309,20 @@
         ]
     },
     {
+        "userStory": "As a tester I want to efficiently test software.",
+        "acceptanceCriteria": [
+            "GIVEN a tester is using the software",
+            "THEN the user efficiently tests software"
+        ]
+    },
+    {
+        "userStory": "As a developer I want, that my software is well-tested.",
+        "acceptanceCriteria": [
+            "GIVEN a developer is using the software",
+            "THEN the user’s software is well-tested"
+        ]
+    },
+    {
         "userStory": "As a manager I want the interface to be read once a day.",
         "acceptanceCriteria": [
             "GIVEN a manager is using the software",
@@ -316,12 +330,61 @@
         ]
     },
     {
-        "userStory": "As a sportive teamplayer I want you and other people to collaboratively jump in the air so that when you jump other people jump as well.",
+        "userStory": "As a user, I want the details of a contact to be grouped together in a useful way",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "GIVEN the active user interface is the details of a contact",
+            "THEN the active user interface is grouped together in a useful way"
+        ]
+    },
+    {
+        "userStory": "As a manager I want the warnings to alert me.",
+        "acceptanceCriteria": [
+            "GIVEN a manager is using the software",
+            "THEN the warnings alert the user"
+        ]
+    },
+    {
+        "userStory": "As a manager I want the interface when running across the street to work nevertheless.",
+        "acceptanceCriteria": [
+            "GIVEN a manager is using the software",
+            "WHEN running across the street to work nevertheless",
+            "THEN the interface"
+        ]
+    },
+    {
+        "userStory": "As a sportive teamplayer I want you and other people to collaboratively jump in the air, so that when you jump other people jump as well.",
         "acceptanceCriteria": [
             "GIVEN a sportive teamplayer is using the software",
             "THEN you and other people collaboratively jump in the air",
             "WHEN you jump",
             "THEN other people jump as well"
+        ]
+    },
+    {
+        "userStory": "As a user I want a warning to be added to a contact, if the contact is dangerous",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "WHEN the contact is dangerous",
+            "THEN a warning is added to a contact"
+        ]
+    },
+    {
+        "userStory": "As an importeur, I want to be alerted when an error occurs during an import\n\n\\\\ Note: This may have many reasons\n\nso I can do something about it.",
+        "acceptanceCriteria": [
+            "GIVEN an importeur is using the software",
+            "WHEN an error occurs",
+            "WHEN an import […]",
+            "THEN the user is alerted"
+        ]
+    },
+    {
+        "userStory": "As a course import person, I want to get an error message during the import if the course is not found",
+        "acceptanceCriteria": [
+            "GIVEN a course import person is using the software",
+            "WHEN the import happens",
+            "WHEN the course is not found",
+            "THEN the user gets an error message"
         ]
     }
 ]

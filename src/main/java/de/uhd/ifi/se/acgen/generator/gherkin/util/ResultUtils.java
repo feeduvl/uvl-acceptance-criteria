@@ -107,7 +107,7 @@ public class ResultUtils {
 
             // If there is an infinitive-to construction with an adverb in the
             // sentence (e.g. “the user wants CoMET to automatically generate
-            // …”), we need to remove everything before andnincluding the
+            // …”), we need to remove everything before and including the
             // “wants”
             processedResultString = processedResultString.substring(firstWordAfterVerb.beginPosition());
 
@@ -238,7 +238,7 @@ public class ResultUtils {
         sanitizedResultString = sanitizedResultString.replaceAll("^\\s+", "");
 
         // Remove whitespaces, commas and sentence periods at the end
-        while (sanitizedResultString.endsWith(",") || sanitizedResultString.endsWith(" ") || sanitizedResultString.endsWith(".") || sanitizedResultString.endsWith("-")) {
+        while (sanitizedResultString.endsWith(",") || sanitizedResultString.endsWith(" ") || sanitizedResultString.endsWith("-")) {
             sanitizedResultString = sanitizedResultString.substring(0, sanitizedResultString.length() - 1);
         }
         return sanitizedResultString;

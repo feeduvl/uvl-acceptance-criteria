@@ -53,7 +53,7 @@ public class PostprocessingUtils {
                         newRawString = newRawString.substring(0, newRawString.length() - 1);
                     }        
                     return new AcceptanceCriterion(newRawString, acceptanceCriterion.getType(), acceptanceCriterion.getBeginReplacementIndex(), other.getBeginReplacementIndex() - 1);
-                }
+                }        
             }
         }
 
