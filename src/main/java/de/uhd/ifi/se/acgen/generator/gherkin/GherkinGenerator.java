@@ -11,12 +11,7 @@ import java.util.Set;
 
 import de.uhd.ifi.se.acgen.exception.TokenNotFoundException;
 import de.uhd.ifi.se.acgen.generator.Generator;
-import de.uhd.ifi.se.acgen.generator.gherkin.util.ActionUtils;
-import de.uhd.ifi.se.acgen.generator.gherkin.util.PostprocessingUtils;
-import de.uhd.ifi.se.acgen.generator.gherkin.util.PreprocessingUtils;
-import de.uhd.ifi.se.acgen.generator.gherkin.util.ResultUtils;
-import de.uhd.ifi.se.acgen.generator.gherkin.util.SharedUtils;
-import de.uhd.ifi.se.acgen.generator.gherkin.util.UIPreconditionUtils;
+import de.uhd.ifi.se.acgen.generator.gherkin.util.*;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterion;
 import de.uhd.ifi.se.acgen.model.AcceptanceCriterionType;
 import de.uhd.ifi.se.acgen.model.UserStory;
