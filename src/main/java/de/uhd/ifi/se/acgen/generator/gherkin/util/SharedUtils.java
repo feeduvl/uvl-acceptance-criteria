@@ -51,7 +51,7 @@ public class SharedUtils {
         // In many cases, the root object of the dependency graph itself is the
         // verb we are looking for
         IndexedWord root = sentence.dependencyParse().getFirstRoot();
-        if (root.word().equalsIgnoreCase(expectedVerb) && root.tag().equals(expectedTag)) {
+        if (root.word().equalsIgnoreCase(expectedVerb)) {
             return root;
         }
 

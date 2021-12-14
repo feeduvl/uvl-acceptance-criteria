@@ -386,5 +386,61 @@
             "WHEN the course is not found",
             "THEN the user gets an error message"
         ]
+    },
+    {
+        "userStory": "As a user, I want to go somewhere",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user goes somewhere"
+        ]
+    },
+    {
+        "userStory": "As a user, I want to relax somewhere",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user relaxes somewhere"
+        ]
+    },
+    {
+        "userStory": "As a pope, I want to bless someone",
+        "acceptanceCriteria": [
+            "GIVEN a pope is using the software",
+            "THEN the user blesses someone"
+        ]
+    },
+    {
+        "userStory": "As a user, I want to scratch my leg",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user scratches the user’s leg"
+        ]
+    },
+    {
+        "userStory": "As a user, I want to wash my clothes",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user washes the user’s clothes"
+        ]
+    },
+    {
+        "userStory": "As a student, I want to study something",
+        "acceptanceCriteria": [
+            "GIVEN a student is using the software",
+            "THEN the user studies something"
+        ]
+    },
+    {
+        "userStory": "As a user, I want to say something",
+        "acceptanceCriteria": [
+            "GIVEN a user is using the software",
+            "THEN the user says something"
+        ]
+    },
+    {
+        "userStory": "As a user and also as another user I want that the deletion date calculated for the deletion is actually used.",
+        "acceptanceCriteria": [
+            "GIVEN a user and also as another user is using the software",
+            "THEN the deletion date calculated for the deletion is actually used"
+        ]
     }
 ]
