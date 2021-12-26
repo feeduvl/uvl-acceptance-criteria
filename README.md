@@ -9,7 +9,7 @@ This is a microservice that can run in a docker container and generates acceptan
 
 ## REST API
 
-See [swagger.yaml](../master/swagger.yaml) for details. The tool at https://editor.swagger.io/ can be used to render the swagger file.
+See [swagger.yaml](../master/swagger.yaml) for details. [This tool](https://editor.swagger.io/?url=https://raw.githubusercontent.com/feeduvl/uvl-acceptance-criteria/main/swagger.yaml) can be used to render the swagger file.
 
 ## Method Parameter
 
