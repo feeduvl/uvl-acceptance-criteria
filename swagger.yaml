@@ -5,7 +5,7 @@ info:
     contains a dataset and method parameters. A dataset JSON object consists of user stories, a user story has a number and the user story text.
   version: '1.0'
 servers:
-  - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+  - url: 'https://feed-uvl.ifi.uni-heidelberg.de:9696'
 paths:
   /hitec/generate/acceptance-criteria/run:
     post:
@@ -48,9 +48,9 @@ paths:
         '500':
           description: returns code 500 when the request is invalid or there was an error while processing
       servers:
-        - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+        - url: 'https://feed-uvl.ifi.uni-heidelberg.de:9696'
     servers:
-      - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+      - url: 'https://feed-uvl.ifi.uni-heidelberg.de:9696'
   /hitec/generate/acceptance-criteria/status:
     get:
       description: returns 'operational' when the microservice is running
@@ -66,12 +66,12 @@ paths:
                     type: string
               examples:
                 '0':
-                  value: |
+                  value:
                     {"status":"operational"}
       servers:
-        - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+        - url: 'https://feed-uvl.ifi.uni-heidelberg.de:9696'
     servers:
-      - url: 'https://feed-uvl.ifi.uni-heidelberg.de'
+      - url: 'https://feed-uvl.ifi.uni-heidelberg.de:9696'
 components:
   schemas:
     Result:
